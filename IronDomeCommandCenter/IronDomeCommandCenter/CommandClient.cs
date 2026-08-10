@@ -1,19 +1,39 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
-
+using System.IO;
 namespace IronDomeCommandCenter
-{//
+{
+    struct TargetData
+    {
+        public string Name { get; set; }
+        public double X { get; set; }
+        public double Y { get; set; }
+        public double Vx { get; set; }
+        public double Vy { get; set; }
+
+        public TargetData(string name, double x, double y, double vx, double vy)
+        {
+            Name = name;
+            X = x;
+            Y = y;
+            Vx = vx;
+            Vy = vy;
+        }
+    }
     class CommandClient
     {
         const int port = 6767;
-        TcpClient client;
         const string address="127.0.0.1";
-
+        
+        StreamReader reader;
+        TcpClient client;
         public CommandClient()
         {
             client = new TcpClient();
@@ -21,17 +41,21 @@ namespace IronDomeCommandCenter
         public async Task ConnectToRadarAsync()
         {
             await client.ConnectAsync(address, port);
-        }
-        public async Task<string> CommandClientReadAsync()
-        {
+
             NetworkStream stream = client.GetStream();
+            reader = new StreamReader(stream,Encoding.UTF8);
+        }
+        public async Task<TargetData?> CommandClientReadAsync()
+        {
+            string? json = await reader.ReadLineAsync();
+            if (json == null)
+            {
+                return null;
+            }
 
-            byte[] buffer = new byte[1024];
+            TargetData target = JsonSerializer.Deserialize<TargetData>(json);
 
-            int bytesRead =
-                await stream.ReadAsync(buffer, 0, buffer.Length);
-
-            return Encoding.UTF8.GetString(buffer, 0, bytesRead);
+            return target;
         }
     }
 }

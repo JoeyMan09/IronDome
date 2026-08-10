@@ -12,13 +12,20 @@
             <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
 
-        <Canvas x:Name="RadarCanvas"
+        <Canvas x:Name="CommandCanvas"
  Grid.Column="0"
  Background="Black"/>
-        <Button x:Name="ConnectToRadar"
-        Content="Connect To Radar"
-        Click="btnConnect_Click"
-        Width="150"
-        Height="40"/>
+        <StackPanel Grid.Column="1">
+            <Button x:Name="ConnectToRadar"
+Content="Connect To Radar"
+Click="btnConnect_Click"
+Margin=" 5"/>
+            <TextBlock x:Name="txtStats"
+        Margin="5"
+        Foreground="Black" Background="AntiqueWhite"/>
+            <TextBlock x:Name="txtStats2"
+        Margin="5"
+        Foreground="Black" Background="AntiqueWhite"/>
+        </StackPanel>
     </Grid>
 </Window>
