@@ -30,6 +30,9 @@ namespace IronDomeRader.Flying_Entity
         }
         public double getX() { return x; }
         public double getY() { return y; }
+        public double getVx() { return Vx; }
+        public double getVy() { return Vy; }
+
         public virtual void UpdatePosition(double dt)
         {
             if (isDestroyed) return;
@@ -62,7 +65,7 @@ namespace IronDomeRader.Flying_Entity
             if (getSpeed() == 0)
                 return double.PositiveInfinity;
             else
-                return distance/getSpeed();
+                return distance / getSpeed();
         }
 
         public override string ToString()

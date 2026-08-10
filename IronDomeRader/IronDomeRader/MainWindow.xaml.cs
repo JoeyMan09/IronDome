@@ -1,4 +1,5 @@
-﻿using IronDomeRader.Flying_Entity.AirCraft;
+﻿using IronDomeRader.Flying_Entity;
+using IronDomeRader.Flying_Entity.AirCraft;
 using IronDomeRader.Flying_Entity.Missle;
 using System.Diagnostics;
 using System.Text;
@@ -33,6 +34,7 @@ namespace IronDomeRader
         private double _lastTime = 0;
         private const double WorldSize = 50000.0;
         private RadarServer radarServer;
+        private FlyingEntity selectedEntity;
         public MainWindow()
         {
             InitializeComponent();
@@ -147,7 +149,7 @@ namespace IronDomeRader
             if (radarSystem.GetFlyingEntities().Count < 5)
                 radarSystem.SpawnFlyingEntity(rand);
 
-            Title = $"Entities: {radarSystem.GetFlyingEntities().Count}";
+            //Title = $"Entities: {radarSystem.GetFlyingEntities().Count}";
 
             DrawSweep();
             DrawRadar();
@@ -218,15 +220,22 @@ namespace IronDomeRader
                 {
                     Width = 8,
                     Height = 8,
-                    Fill = Brushes.Cyan
+                    Fill = Brushes.Cyan,
+
+                    Tag = entity
                 };
 
-                if (entity is SupersonicMissile) 
+                if (entity is SupersonicMissile)
                     dot.Fill = Brushes.Red;
+
                 else if (entity is BallisticMissile)
                     dot.Fill = Brushes.Yellow;
+
                 else if (entity is Drone)
                     dot.Fill = Brushes.Blue;
+
+                dot.MouseLeftButtonDown +=
+                    Dot_MouseLeftButtonDown;
 
                 Canvas.SetLeft(dot, canvasX - 5);
                 Canvas.SetTop(dot, canvasY - 5);
@@ -248,9 +257,39 @@ namespace IronDomeRader
                 _entityLayer.Children.Add(label);
             }
         }
-        private void btnSenToCommand_Click(object sender, RoutedEventArgs e)
+        private void Dot_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            
+            Ellipse dot = sender as Ellipse;
+
+            if (dot != null)
+            {
+                selectedEntity = dot.Tag as FlyingEntity;
+                if (selectedEntity != null)
+                {
+                    Title = $"Selected: {selectedEntity.getName()}";
+                }
+            }
+        }
+        private async void btnSenToCommand_Click(object sender, RoutedEventArgs e)
+        {
+            if (selectedEntity == null)
+            {
+                MessageBox.Show(
+                    "Select a target first"
+                );
+
+                return;
+            }
+
+            TargetData target = new TargetData(
+                selectedEntity.getName(),
+                selectedEntity.getX(),
+                selectedEntity.getY(),
+                selectedEntity.getVx(),
+                selectedEntity.getVy()
+            );
+
+            await radarServer.SendTargetAsync(target);
         }
 
         private void btnStop_Click(object sender, RoutedEventArgs e)

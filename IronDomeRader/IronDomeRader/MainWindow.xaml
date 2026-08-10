@@ -23,6 +23,9 @@
 
             <Button x:Name="btnSenToCommand"
             Content="Send To Command"
+            Margin="5" Click="btnSenToCommand_Click"/>
+            <Button x:Name="btnStartServer"
+            Content="Start Server"
             Margin="5" Click="btnStartServer_Click"/>
             <Button x:Name="btnStop"
             Content="Stop Simulation"
