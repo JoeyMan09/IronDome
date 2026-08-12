@@ -2,23 +2,23 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-namespace IronDomeCommandCenter
+
+namespace IronDomeInterceptor
 {
     struct TargetData
     {
-        public int Id{get;set;}
+        public int Id { get; set; }
         public string Name { get; set; }
         public double X { get; set; }
         public double Y { get; set; }
         public double Vx { get; set; }
         public double Vy { get; set; }
 
-        public TargetData(int id,string name, double x, double y, double vx, double vy)
+        public TargetData(int id, string name, double x, double y, double vx, double vy)
         {
             Id = id;
             Name = name;
@@ -29,7 +29,7 @@ namespace IronDomeCommandCenter
         }
         public double GetSpeed()
         {
-            if(X < 0 || Y < 0)
+            if (X < 0 || Y < 0)
             {
                 return -Math.Sqrt(X * X + Y * Y);
             }
@@ -43,35 +43,38 @@ namespace IronDomeCommandCenter
             $"Speed: {GetSpeed():F0}";
         }
     }
-    class CommandClient
+    
+       
+    
+    internal class InterceptorClient
     {
-        const int port = 6767;
-        const string address="127.0.0.1";
-        
+        const int port = 6768;
+        const string address = "127.0.0.1";
+
         StreamReader reader;
         TcpClient client;
-        public CommandClient()
+        public InterceptorClient()
         {
             client = new TcpClient();
         }
-        public async Task ConnectToRadarAsync()
+        public async Task ConnectToCommandAsync()
         {
             await client.ConnectAsync(address, port);
 
             NetworkStream stream = client.GetStream();
-            reader = new StreamReader(stream,Encoding.UTF8);
+            reader = new StreamReader(stream, Encoding.UTF8);
         }
-        public async Task<TargetData?> CommandClientReadAsync()
+        public async Task<InterceptCommand?> InterceptorClientReadAsync()
         {
             string? json = await reader.ReadLineAsync();
+
             if (json == null)
-            {
                 return null;
-            }
 
-            TargetData target = JsonSerializer.Deserialize<TargetData>(json);
+            InterceptCommand? command =
+                JsonSerializer.Deserialize<InterceptCommand>(json);
 
-            return target;
+            return command;
         }
     }
 }

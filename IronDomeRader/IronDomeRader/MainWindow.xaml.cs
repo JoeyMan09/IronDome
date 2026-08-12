@@ -274,14 +274,13 @@ namespace IronDomeRader
         {
             if (selectedEntity == null)
             {
-                MessageBox.Show(
-                    "Select a target first"
-                );
+                MessageBox.Show("Select a target first");
 
                 return;
             }
 
             TargetData target = new TargetData(
+                selectedEntity.getId(),
                 selectedEntity.getName(),
                 selectedEntity.getX(),
                 selectedEntity.getY(),

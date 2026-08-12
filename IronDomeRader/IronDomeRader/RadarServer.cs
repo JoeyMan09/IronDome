@@ -12,19 +12,21 @@ namespace IronDomeRader
 {
     public struct TargetData
     {
+        public int Id { get; set; }
         public string Name { get; set; }
         public double X { get; set; }
         public double Y { get; set; }
         public double Vx { get; set; }
         public double Vy { get; set; }
 
-        public TargetData(
+        public TargetData(int id,
             string name,
             double x,
             double y,
             double vx,
             double vy)
         {
+            this.Id = id;
             Name = name;
             X = x;
             Y = y;

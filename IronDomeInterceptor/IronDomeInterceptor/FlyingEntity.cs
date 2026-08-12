@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace IronDomeRader.Flying_Entity
+namespace IronDomeInterceptor
 {
     internal class FlyingEntity
     {
@@ -44,12 +44,6 @@ namespace IronDomeRader.Flying_Entity
             x += Vx * dt;
             y += Vy * dt;
 
-
-            if (y == 0)
-            {
-                y = 0;
-                isDestroyed = true;
-            }
         }
 
         public bool HasImpacted()
