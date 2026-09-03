@@ -17,9 +17,6 @@ using System.Windows.Threading;
 
 namespace IronDomeRader
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private RadarSystem radarSystem;

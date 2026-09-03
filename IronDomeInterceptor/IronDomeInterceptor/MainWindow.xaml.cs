@@ -34,14 +34,20 @@ namespace IronDomeInterceptor
             if (command == null)
                 return;
 
-            txtCurrentCommand.Text = txtCurrentCommand.Text +=
-    $"Command ID: {command.CommandId}\n" +
-    $"Target ID: {command.TargetId}\n" +
-    $"Target X: {command.TargetX:F0}\n" +
-    $"Target Y: {command.TargetY:F0}\n" +
-    $"Target Vx: {command.TargetVx:F0}\n" +
-    $"Target Vy: {command.TargetVy:F0}\n" +
-    $"--------------------\n";
+            FlyingEntity target = new FlyingEntity(
+                command.TargetX,
+                command.TargetY,
+                $"Target-{command.TargetId}",
+                command.TargetVx,
+                command.TargetVy,
+                1
+            );
+
+            FlyingEntity interceptorTarget = target;
+
+            Interceptor interceptor = new Interceptor( 0,  0, "Interceptor-1", 600,0, 1,1000);
+
+            interceptor.EngageTarget(target);
 
         }
 
