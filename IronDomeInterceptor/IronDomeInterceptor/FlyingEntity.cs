@@ -27,6 +27,17 @@ namespace IronDomeInterceptor
 
             isDestroyed = false;
         }
+        public FlyingEntity(FlyingEntity entity)
+        {
+            this.id = ClassId++;
+            this.x = entity.x;
+            this.y = entity.y;
+            this.name = entity.name;
+            this.Vx = entity.Vx;
+            this.Vy = entity.Vy;
+            this.size = entity.size;
+            isDestroyed = false;
+        }
         public string getName()
         {
             return name;

@@ -300,6 +300,8 @@ namespace IronDomeRader
         private async void btnStartServer_Click(object sender, RoutedEventArgs e)
         {
             await radarServer.RaderServerListenAsync();
+            txtStats.Text = "Server Connected";
+            txtStats.Foreground = Brushes.Green;
         }
     }
 }

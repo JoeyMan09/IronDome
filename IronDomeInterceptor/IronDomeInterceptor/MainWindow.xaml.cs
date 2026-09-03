@@ -8,6 +8,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using IronDomeInterceptor.inteceptor;
 
 namespace IronDomeInterceptor
 {
@@ -17,16 +18,21 @@ namespace IronDomeInterceptor
     public partial class MainWindow : Window
     {
         private InterceptorClient interceptorClient;
+        private List<FlyingEntity> flyingEntities;
+        private List<Interceptor> interceptors;
         public MainWindow()
         {
             InitializeComponent();
             interceptorClient = new InterceptorClient();
+            flyingEntities = new List<FlyingEntity>();
+            interceptors = new List<Interceptor>();
         }
         private async void btnConnectToCommand_Click(object sender, RoutedEventArgs e)
         {
             await interceptorClient.ConnectToCommandAsync();
 
             txtConnectionStatus.Text = "Command Center: Connected";
+            txtConnectionStatus.Foreground = Brushes.Green;
 
             InterceptCommand? command =
                 await interceptorClient.InterceptorClientReadAsync();
@@ -49,6 +55,8 @@ namespace IronDomeInterceptor
 
             interceptor.EngageTarget(target);
 
+            flyingEntities.Add(target);
+            interceptors.Add(interceptor);
         }
 
         private void btnAbort_Click(object sender, RoutedEventArgs e)
