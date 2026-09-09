@@ -29,7 +29,7 @@ namespace IronDomeCommandCenter
         {
             await commandClient.ConnectToRadarAsync();
             txtStats.Text = "Connected";
-            
+            txtStats.Foreground = Brushes.Green;
             await ListenToRadarAsync();
         }
         private async Task ListenToRadarAsync()
