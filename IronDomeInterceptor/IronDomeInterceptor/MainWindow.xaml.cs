@@ -1,14 +1,15 @@
-﻿using System.Text;
+﻿using IronDomeInterceptor.inteceptor;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using IronDomeInterceptor.inteceptor;
 using System.Windows.Threading;
 
 namespace IronDomeInterceptor
@@ -42,14 +43,11 @@ namespace IronDomeInterceptor
             Interceptor interceptor = interceptors[0];
 
             foreach (FlyingEntity entity in flyingEntities)
-            {
                 entity.UpdatePosition(dt);
-            }
 
             foreach (Interceptor inter in interceptors)
-            {
                 inter.UpdatePosition(dt);
-            }
+
             targetTrail.Add(new Point(
                 target.getX(),
                 target.getY()
@@ -60,9 +58,121 @@ namespace IronDomeInterceptor
                 interceptor.getY()
             ));
 
-            DrawSimulation();
+            bool intercepted = interceptor.GetHasInterceptedTarget();
 
+            // שומרים את מיקום הפיצוץ לפני שמוחקים את המטרה
+            double explosionX = target.getX();
+            double explosionY = target.getY();
+
+            if (intercepted)
+            {
+                FlyingEntity interceptedTarget = interceptor.GetTarget();
+
+                if (interceptedTarget != null)
+                    flyingEntities.Remove(interceptedTarget);
+
+                interceptors.Remove(interceptor);
+            }
+
+            // קודם מציירים מחדש את המערכת
+            DrawSimulation();
             UpdateTelemetry();
+
+            // ורק אז מוסיפים את הפיצוץ
+            if (intercepted)
+            {
+                ShowExplosion(explosionX, explosionY);
+            }
+        }
+        private void ShowExplosion(double worldX, double worldY)
+        {
+            Point point = WorldToCanvas(worldX, worldY);
+
+            Ellipse outerExplosion = new Ellipse
+            {
+                Width = 20,
+                Height = 20,
+                Fill = Brushes.OrangeRed,
+                Stroke = Brushes.Yellow,
+                StrokeThickness = 4,
+                Opacity = 1
+            };
+
+            Ellipse innerExplosion = new Ellipse
+            {
+                Width = 10,
+                Height = 10,
+                Fill = Brushes.Yellow,
+                Opacity = 1
+            };
+
+            TextBlock boomText = new TextBlock
+            {
+                Text = "BOOM!",
+                Foreground = Brushes.Yellow,
+                FontWeight = FontWeights.Bold,
+                FontSize = 18
+            };
+
+            Canvas.SetLeft(outerExplosion, point.X - 10);
+            Canvas.SetTop(outerExplosion, point.Y - 10);
+
+            Canvas.SetLeft(innerExplosion, point.X - 5);
+            Canvas.SetTop(innerExplosion, point.Y - 5);
+
+            Canvas.SetLeft(boomText, point.X - 30);
+            Canvas.SetTop(boomText, point.Y - 20);
+
+            InterceptorCanvas.Children.Add(outerExplosion);
+            InterceptorCanvas.Children.Add(innerExplosion);
+            InterceptorCanvas.Children.Add(boomText);
+
+            DoubleAnimation outerSize = new DoubleAnimation
+            {
+                From = 20,
+                To = 120,
+                Duration = TimeSpan.FromMilliseconds(600)
+            };
+
+            DoubleAnimation innerSize = new DoubleAnimation
+            {
+                From = 10,
+                To = 70,
+                Duration = TimeSpan.FromMilliseconds(450)
+            };
+
+            DoubleAnimation fade = new DoubleAnimation
+            {
+                From = 1,
+                To = 0,
+                Duration = TimeSpan.FromMilliseconds(700)
+            };
+
+            DoubleAnimation textSize = new DoubleAnimation
+            {
+                From = 18,
+                To = 48,
+                Duration = TimeSpan.FromMilliseconds(450)
+            };
+
+            fade.Completed += (s, e) =>
+            {
+                InterceptorCanvas.Children.Remove(outerExplosion);
+                InterceptorCanvas.Children.Remove(innerExplosion);
+                InterceptorCanvas.Children.Remove(boomText);
+            };
+
+            outerExplosion.BeginAnimation(WidthProperty, outerSize);
+            outerExplosion.BeginAnimation(HeightProperty, outerSize);
+
+            innerExplosion.BeginAnimation(WidthProperty, innerSize);
+            innerExplosion.BeginAnimation(HeightProperty, innerSize);
+
+            outerExplosion.BeginAnimation(OpacityProperty, fade);
+            innerExplosion.BeginAnimation(OpacityProperty, fade);
+            boomText.BeginAnimation(OpacityProperty, fade);
+
+            boomText.BeginAnimation(TextBlock.FontSizeProperty, textSize);
         }
         private Point WorldToCanvas(double x, double y)
         {
@@ -165,6 +275,21 @@ namespace IronDomeInterceptor
 
                 Canvas.SetLeft(target, point.X - 2);
                 Canvas.SetTop(target, point.Y - 2);
+
+                
+            }
+            foreach (Interceptor interceptor in interceptors)
+            {
+                Point point= WorldToCanvas(interceptor.getX(), interceptor.getY());
+                Ellipse intercept = new Ellipse();
+                intercept.Width = 4;
+                intercept.Height = 4;
+                intercept.Fill = Brushes.Orange;
+
+                InterceptorCanvas.Children.Add(intercept);
+
+                Canvas.SetLeft(intercept, point.X - 2);
+                Canvas.SetTop(intercept, point.Y - 2);
             }
         }
         private void btnAbort_Click(object sender, RoutedEventArgs e)
