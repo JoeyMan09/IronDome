@@ -36,53 +36,108 @@ namespace IronDomeInterceptor
         }
         private void SimulationTimer_Tick(object? sender, EventArgs e)
         {
-            if (flyingEntities.Count == 0 || interceptors.Count == 0)
-                return;
-
-            FlyingEntity target = flyingEntities[0];
-            Interceptor interceptor = interceptors[0];
-
             foreach (FlyingEntity entity in flyingEntities)
-                entity.UpdatePosition(dt);
-
-            foreach (Interceptor inter in interceptors)
-                inter.UpdatePosition(dt);
-
-            targetTrail.Add(new Point(
-                target.getX(),
-                target.getY()
-            ));
-
-            interceptorTrail.Add(new Point(
-                interceptor.getX(),
-                interceptor.getY()
-            ));
-
-            bool intercepted = interceptor.GetHasInterceptedTarget();
-
-            // שומרים את מיקום הפיצוץ לפני שמוחקים את המטרה
-            double explosionX = target.getX();
-            double explosionY = target.getY();
-
-            if (intercepted)
             {
-                FlyingEntity interceptedTarget = interceptor.GetTarget();
+                entity.UpdatePosition(dt);
+            }
 
-                if (interceptedTarget != null)
-                    flyingEntities.Remove(interceptedTarget);
+            foreach (Interceptor interceptor in interceptors)
+            {
+                interceptor.UpdatePosition(dt);
+            }
 
+            foreach (FlyingEntity target in flyingEntities)
+            {
+                targetTrail.Add(
+                    new Point(target.getX(), target.getY())
+                );
+            }
+
+            foreach (Interceptor interceptor in interceptors)
+            {
+                interceptorTrail.Add(
+                    new Point(interceptor.getX(), interceptor.getY())
+                );
+            }
+
+            List<FlyingEntity> targetsToRemove = new List<FlyingEntity>();
+            List<Interceptor> interceptorsToRemove = new List<Interceptor>();
+
+            foreach (Interceptor interceptor in interceptors)
+            {
+                if (interceptor.GetHasInterceptedTarget())
+                {
+                    FlyingEntity target = interceptor.GetTarget();
+
+                    if (target != null)
+                    {
+                        targetsToRemove.Add(target);
+
+                    }
+
+                    interceptorsToRemove.Add(interceptor);
+                }
+            }
+
+            foreach (FlyingEntity target in targetsToRemove)
+            {
+                flyingEntities.Remove(target);
+            }
+
+            foreach (Interceptor interceptor in interceptorsToRemove)
+            {
                 interceptors.Remove(interceptor);
             }
 
-            // קודם מציירים מחדש את המערכת
+            UpdateInterceptorList();
             DrawSimulation();
+
+            foreach (FlyingEntity target in targetsToRemove)
+            {
+                ShowExplosion(
+                    target.getX(),
+                    target.getY()
+                );
+            }
+
             UpdateTelemetry();
 
-            // ורק אז מוסיפים את הפיצוץ
-            if (intercepted)
+            if (flyingEntities.Count == 0 &&
+                interceptors.Count == 0)
             {
-                ShowExplosion(explosionX, explosionY);
+                simulationTimer.Stop();
+
+                txtState.Text = "READY";
             }
+        }
+        private void lstInterceptors_SelectionChanged(
+    object sender,
+    SelectionChangedEventArgs e)
+        {
+            if (lstInterceptors.SelectedItem is not Interceptor interceptor)
+                return;
+
+            FlyingEntity target = interceptor.GetTarget();
+
+            if (target == null)
+                return;
+
+            double dx = target.getX() - interceptor.getX();
+            double dy = target.getY() - interceptor.getY();
+
+            double distance = Math.Sqrt(dx * dx + dy * dy);
+
+            txtInterceptStatus.Text =
+                $"Interceptor: {interceptor.getName()}\n" +
+                $"Target: {target.getName()}";
+
+            txtDistance.Text = $"{distance:F0} m";
+            txtTimeToIntercept.Text =
+                $"{interceptor.TimeToIntercept():F1} s";
+
+            txtState.Text = interceptor.GetHasInterceptedTarget()
+                ? "INTERCEPTED"
+                : "TRACKING";
         }
         private void ShowExplosion(double worldX, double worldY)
         {
@@ -193,19 +248,33 @@ namespace IronDomeInterceptor
         }
         private void UpdateTelemetry()
         {
-            if (flyingEntities.Count == 0 || interceptors.Count == 0)
+            // No interceptor selected
+            if (lstInterceptors.SelectedItem is not Interceptor interceptor)
+            {
+                txtInterceptStatus.Text = "No interceptor selected";
+                txtDistance.Text = "-";
+                txtTimeToIntercept.Text = "-";
+                txtState.Text = "READY";
+                return;
+            }
+
+            // Get the target assigned to this interceptor
+            FlyingEntity target = interceptor.GetTarget();
+
+            if (target == null)
                 return;
 
-            FlyingEntity target = flyingEntities[0];
-            Interceptor interceptor = interceptors[0];
-
+            // Calculate distance
             double dx = target.getX() - interceptor.getX();
             double dy = target.getY() - interceptor.getY();
 
             double distance = Math.Sqrt(dx * dx + dy * dy);
 
+            // Update UI
             txtDistance.Text = $"{distance:F0} m";
-            txtTimeToIntercept.Text = $"{interceptor.TimeToIntercept():F1} s";
+
+            txtTimeToIntercept.Text =
+                $"{interceptor.TimeToIntercept():F1} s";
 
             if (interceptor.GetHasInterceptedTarget())
                 txtState.Text = "INTERCEPTED";
@@ -221,31 +290,76 @@ namespace IronDomeInterceptor
             txtConnectionStatus.Text = "Command Center: Connected";
             txtConnectionStatus.Foreground = Brushes.Green;
 
-            InterceptCommand? command =
-                await interceptorClient.InterceptorClientReadAsync();
+            await ListenToCommandsAsync();
+        }
+        private async Task ListenToCommandsAsync()
+        {
+            while (true)
+            {
+                InterceptCommand? command =
+                    await interceptorClient.InterceptorClientReadAsync();
 
-            if (command == null)
-                return;
+                if (command == null)
+                    break;
 
-            FlyingEntity target = new FlyingEntity(
-                command.TargetX,
-                command.TargetY,
-                $"Target-{command.TargetId}",
-                command.TargetVx,
-                command.TargetVy,
-                1
-            );
+                FlyingEntity target = new FlyingEntity(
+                    command.TargetX,
+                    command.TargetY,
+                    $"Target-{command.TargetId}",
+                    command.TargetVx,
+                    command.TargetVy,
+                    1
+                );
 
-            FlyingEntity interceptorTarget = target;
-            txtCurrentCommand.Text = interceptorTarget.ToString();
-            Interceptor interceptor = new Interceptor( 0,  0, "Interceptor-1", 600,0, 1,1000);
+                Interceptor interceptor = new Interceptor(
+                    0,
+                    0,
+                    $"Interceptor-{interceptors.Count + 1}",
+                    600,
+                    0,
+                    1,
+                    1000
+                );
 
-            interceptor.EngageTarget(target);
+                interceptor.EngageTarget(target);
 
-            flyingEntities.Add(target);
-            interceptors.Add(interceptor);
-            txtInterceptStatus.Text = interceptor.ToString();
-            simulationTimer.Start();
+                flyingEntities.Add(target);
+                interceptors.Add(interceptor);
+
+                UpdateInterceptorList();
+                if (lstInterceptors.SelectedItem == null &&
+                lstInterceptors.Items.Count > 0)
+                {
+                    lstInterceptors.SelectedIndex = 0;
+                }
+                if (!simulationTimer.IsEnabled)
+                {
+                    simulationTimer.Start();
+                }
+            }
+        }
+        private void UpdateInterceptorList()
+        {
+            int selectedId = -1;
+
+            if (lstInterceptors.SelectedItem is Interceptor selected)
+                selectedId = selected.getId();
+
+            lstInterceptors.Items.Clear();
+
+            foreach (Interceptor interceptor in interceptors)
+            {
+                lstInterceptors.Items.Add(interceptor);
+            }
+
+            foreach (Interceptor interceptor in lstInterceptors.Items)
+            {
+                if (interceptor.getId() == selectedId)
+                {
+                    lstInterceptors.SelectedItem = interceptor;
+                    break;
+                }
+            }
         }
         private void DrawSimulation()
         {

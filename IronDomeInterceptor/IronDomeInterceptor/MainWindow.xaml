@@ -254,7 +254,21 @@
                                FontSize="16"
                                FontWeight="Bold"
                                Foreground="#F59E0B"/>
+                    <TextBlock Text="ACTIVE INTERCEPTORS"
+           Foreground="#94A3B8"
+           FontSize="11"
+           Margin="0,12,0,4"/>
 
+                    <ListBox x:Name="lstInterceptors"
+         Height="120"
+         SelectionChanged="lstInterceptors_SelectionChanged"
+         Background="#0A1016"
+         Foreground="White"
+         BorderBrush="#263746"
+         BorderThickness="1"
+         FontFamily="Consolas"
+         FontSize="12"
+         Margin="0,0,0,10"/>
                     <TextBlock x:Name="txtInterceptStatus"
                                Text="System idle"
                                Margin="0,12,0,12"
