@@ -43,7 +43,7 @@ namespace IronDomeInterceptor
 
             string path = System.IO.Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
-                "C:\\Users\\idank\\source\\repos\\IronDome\\IronDomeSystem\\IronDomeInterceptor\\IronDomeInterceptor\\אוריאל.mp4"
+                "C:\\Users\\idank\\source\\repos\\IronDome\\IronDomeSystem\\IronDomeInterceptor\\IronDomeInterceptor\\אוריאלחדש.wav"
             );
 
             explosionSound = new SoundPlayer(path);
