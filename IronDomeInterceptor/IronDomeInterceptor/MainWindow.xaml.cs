@@ -19,11 +19,14 @@ namespace IronDomeInterceptor
     public partial class MainWindow : Window
     {
         private SoundPlayer explosionSound;
+        private SoundPlayer launchSound;
+
         private MediaPlayer backgroundMusic;
 
         private InterceptorClient interceptorClient;
         private List<FlyingEntity> flyingEntities;
         private List<Interceptor> interceptors;
+
         private DispatcherTimer simulationTimer;
 
         private const double dt = 0.05;
@@ -41,6 +44,7 @@ namespace IronDomeInterceptor
             flyingEntities = new List<FlyingEntity>();
             interceptors = new List<Interceptor>();
 
+
             simulationTimer = new DispatcherTimer();
 
             simulationTimer.Interval =
@@ -50,9 +54,9 @@ namespace IronDomeInterceptor
                 SimulationTimer_Tick;
 
 
-            // =========================
+            // =====================================
             // EXPLOSION SOUND
-            // =========================
+            // =====================================
 
             string explosionPath =
                 @"C:\Users\idank\source\repos\IronDome\IronDomeSystem\IronDomeInterceptor\IronDomeInterceptor\אוריאלחדש.wav";
@@ -63,9 +67,22 @@ namespace IronDomeInterceptor
             explosionSound.Load();
 
 
-            // =========================
+            // =====================================
+            // MISSILE LAUNCH SOUND
+            // =====================================
+
+            string launchPath =
+                @"C:\Users\idank\Downloads\428360__jacco18__missile.wav";
+
+            launchSound =
+                new SoundPlayer(launchPath);
+
+            launchSound.Load();
+
+
+            // =====================================
             // BACKGROUND MUSIC
-            // =========================
+            // =====================================
 
             string backgroundPath =
                 @"C:\Users\idank\source\repos\IronDome\IronDomeSystem\IronDomeInterceptor\IronDomeInterceptor\טרוליםחדש.wav";
@@ -80,11 +97,12 @@ namespace IronDomeInterceptor
                 )
             );
 
-            // Volume 0 - 1
-            backgroundMusic.Volume = 0.25;
+
+            // Start very quiet
+            backgroundMusic.Volume = 0.01;
 
 
-            // Loop music forever
+            // Loop forever
             backgroundMusic.MediaEnded +=
                 (s, e) =>
                 {
@@ -99,18 +117,32 @@ namespace IronDomeInterceptor
         }
 
 
-
         private void SimulationTimer_Tick(
             object? sender,
             EventArgs e)
         {
+            // =====================================
+            // MOVE TARGETS
+            // =====================================
+
             foreach (
                 FlyingEntity entity
                 in flyingEntities)
             {
                 entity.UpdatePosition(dt);
             }
-            UpdateBackgroundMusic();
+
+
+            // =====================================
+            // UPDATE BACKGROUND MUSIC VOLUME
+            // =====================================
+
+            UpdateBackgroundMusicVolume();
+
+
+            // =====================================
+            // MOVE INTERCEPTORS
+            // =====================================
 
             foreach (
                 Interceptor interceptor
@@ -119,6 +151,10 @@ namespace IronDomeInterceptor
                 interceptor.UpdatePosition(dt);
             }
 
+
+            // =====================================
+            // TARGET TRAILS
+            // =====================================
 
             foreach (
                 FlyingEntity target
@@ -132,6 +168,10 @@ namespace IronDomeInterceptor
                 );
             }
 
+
+            // =====================================
+            // INTERCEPTOR TRAILS
+            // =====================================
 
             foreach (
                 Interceptor interceptor
@@ -155,6 +195,10 @@ namespace IronDomeInterceptor
                 new List<Interceptor>();
 
 
+            // =====================================
+            // CHECK INTERCEPTIONS
+            // =====================================
+
             foreach (
                 Interceptor interceptor
                 in interceptors)
@@ -166,6 +210,7 @@ namespace IronDomeInterceptor
                     FlyingEntity target =
                         interceptor.GetTarget();
 
+
                     if (target != null)
                     {
                         targetsToRemove.Add(
@@ -173,12 +218,17 @@ namespace IronDomeInterceptor
                         );
                     }
 
+
                     interceptorsToRemove.Add(
                         interceptor
                     );
                 }
             }
 
+
+            // =====================================
+            // REMOVE TARGETS
+            // =====================================
 
             foreach (
                 FlyingEntity target
@@ -189,6 +239,10 @@ namespace IronDomeInterceptor
                 );
             }
 
+
+            // =====================================
+            // REMOVE INTERCEPTORS
+            // =====================================
 
             foreach (
                 Interceptor interceptor
@@ -205,7 +259,10 @@ namespace IronDomeInterceptor
             DrawSimulation();
 
 
-            // Explosion
+            // =====================================
+            // EXPLOSIONS
+            // =====================================
+
             foreach (
                 FlyingEntity target
                 in targetsToRemove)
@@ -228,9 +285,97 @@ namespace IronDomeInterceptor
 
                 txtState.Text =
                     "READY";
+
+                // Return music to minimum volume
+                backgroundMusic.Volume = 0.01;
             }
         }
 
+
+        // =========================================
+        // BACKGROUND MUSIC VOLUME
+        // =========================================
+
+        private void UpdateBackgroundMusicVolume()
+        {
+            if (flyingEntities.Count == 0)
+            {
+                backgroundMusic.Volume = 0.01;
+
+                return;
+            }
+
+
+            double closestDistance =
+                double.MaxValue;
+
+
+            foreach (
+                FlyingEntity entity
+                in flyingEntities)
+            {
+                double x =
+                    entity.getX();
+
+                double y =
+                    entity.getY();
+
+
+                // Battery is at (0,0)
+                double distance =
+                    Math.Sqrt(
+                        x * x +
+                        y * y
+                    );
+
+
+                if (
+                    distance <
+                    closestDistance)
+                {
+                    closestDistance =
+                        distance;
+                }
+            }
+
+
+            // From 25km to the battery
+            const double maxDistance =
+                25000.0;
+
+
+            // 0 = far away
+            // 1 = at battery
+            double closeness =
+                1.0 -
+                Math.Clamp(
+                    closestDistance /
+                    maxDistance,
+
+                    0.0,
+                    1.0
+                );
+
+
+            const double minVolume =
+                0.01;
+
+            const double maxVolume =
+                0.50;
+
+
+            double newVolume =
+                minVolume +
+                closeness *
+                (
+                    maxVolume -
+                    minVolume
+                );
+
+
+            backgroundMusic.Volume =
+                newVolume;
+        }
 
 
         private void
@@ -290,14 +435,13 @@ namespace IronDomeInterceptor
         }
 
 
-
         private void ShowExplosion(
             double worldX,
             double worldY)
         {
-            // =========================
+            // =====================================
             // PLAY EXPLOSION SOUND
-            // =========================
+            // =====================================
 
             explosionSound.Play();
 
@@ -476,58 +620,49 @@ namespace IronDomeInterceptor
                 };
 
 
-            outerExplosion
-                .BeginAnimation(
-                    WidthProperty,
-                    outerSize
-                );
+            outerExplosion.BeginAnimation(
+                WidthProperty,
+                outerSize
+            );
 
-            outerExplosion
-                .BeginAnimation(
-                    HeightProperty,
-                    outerSize
-                );
+            outerExplosion.BeginAnimation(
+                HeightProperty,
+                outerSize
+            );
 
 
-            innerExplosion
-                .BeginAnimation(
-                    WidthProperty,
-                    innerSize
-                );
+            innerExplosion.BeginAnimation(
+                WidthProperty,
+                innerSize
+            );
 
-            innerExplosion
-                .BeginAnimation(
-                    HeightProperty,
-                    innerSize
-                );
+            innerExplosion.BeginAnimation(
+                HeightProperty,
+                innerSize
+            );
 
 
-            outerExplosion
-                .BeginAnimation(
-                    OpacityProperty,
-                    fade
-                );
+            outerExplosion.BeginAnimation(
+                OpacityProperty,
+                fade
+            );
 
-            innerExplosion
-                .BeginAnimation(
-                    OpacityProperty,
-                    fade
-                );
+            innerExplosion.BeginAnimation(
+                OpacityProperty,
+                fade
+            );
 
-            boomText
-                .BeginAnimation(
-                    OpacityProperty,
-                    fade
-                );
+            boomText.BeginAnimation(
+                OpacityProperty,
+                fade
+            );
 
 
-            boomText
-                .BeginAnimation(
-                    TextBlock.FontSizeProperty,
-                    textSize
-                );
+            boomText.BeginAnimation(
+                TextBlock.FontSizeProperty,
+                textSize
+            );
         }
-
 
 
         private Point WorldToCanvas(
@@ -577,7 +712,6 @@ namespace IronDomeInterceptor
                 canvasY
             );
         }
-
 
 
         private void UpdateTelemetry()
@@ -653,7 +787,6 @@ namespace IronDomeInterceptor
         }
 
 
-
         private async void
             btnConnectToCommand_Click(
                 object sender,
@@ -672,7 +805,6 @@ namespace IronDomeInterceptor
 
             await ListenToCommandsAsync();
         }
-
 
 
         private async Task
@@ -722,6 +854,13 @@ namespace IronDomeInterceptor
                 );
 
 
+                // =====================================
+                // MISSILE LAUNCH SOUND
+                // =====================================
+
+                launchSound.Play();
+
+
                 flyingEntities.Add(
                     target
                 );
@@ -753,7 +892,6 @@ namespace IronDomeInterceptor
                 }
             }
         }
-
 
 
         private void
@@ -804,7 +942,6 @@ namespace IronDomeInterceptor
                 }
             }
         }
-
 
 
         private void DrawSimulation()
@@ -927,69 +1064,6 @@ namespace IronDomeInterceptor
                     point.Y - 2
                 );
             }
-        }
-        private void UpdateBackgroundMusic()
-        {
-            if (flyingEntities.Count == 0)
-            {
-                // No threats
-                backgroundMusic.Volume = 0.20;
-                backgroundMusic.SpeedRatio = 1.0;
-                return;
-            }
-
-            double closestDistance = double.MaxValue;
-
-            foreach (FlyingEntity entity in flyingEntities)
-            {
-                // Battery is at (0, 0)
-                double distance = Math.Sqrt(
-                    entity.getX() * entity.getX() +
-                    entity.getY() * entity.getY()
-                );
-
-                if (distance < closestDistance)
-                {
-                    closestDistance = distance;
-                }
-            }
-
-            // Maximum distance at which the effect starts
-            double maxDistance = 25000.0;
-
-            // 0 = far away
-            // 1 = at the battery
-            double closeness =
-     1.0 - Math.Clamp(
-         closestDistance / maxDistance,
-         0.0,
-         1.0
-     );
-
-            closeness = closeness * closeness;
-
-            // ==========================
-            // VOLUME
-            // ==========================
-
-            double minVolume = 0.20;
-            double maxVolume = 1.00;
-
-            backgroundMusic.Volume =
-                minVolume +
-                closeness * (maxVolume - minVolume);
-
-
-            // ==========================
-            // SPEED
-            // ==========================
-
-            double minSpeed = 1.0;
-            double maxSpeed = 2.0;
-
-            backgroundMusic.SpeedRatio =
-                minSpeed +
-                closeness * (maxSpeed - minSpeed);
         }
 
 
