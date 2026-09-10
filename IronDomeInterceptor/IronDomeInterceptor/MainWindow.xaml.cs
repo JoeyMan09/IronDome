@@ -1,4 +1,5 @@
 ﻿using IronDomeInterceptor.inteceptor;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,11 +12,13 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using System.Media;
 
 namespace IronDomeInterceptor
 {
     public partial class MainWindow : Window
     {
+        private SoundPlayer explosionSound;
         private InterceptorClient interceptorClient;
         private List<FlyingEntity> flyingEntities;
         private List<Interceptor> interceptors;
@@ -23,16 +26,28 @@ namespace IronDomeInterceptor
         private const double dt = 0.05;
         private List<Point> targetTrail = new List<Point>();
         private List<Point> interceptorTrail = new List<Point>();
+        string path = System.IO.Path.Combine( AppDomain.CurrentDomain.BaseDirectory, "אוריאל.mp4");
+
+
         public MainWindow()
         {
             InitializeComponent();
+
             interceptorClient = new InterceptorClient();
             flyingEntities = new List<FlyingEntity>();
             interceptors = new List<Interceptor>();
+
             simulationTimer = new DispatcherTimer();
             simulationTimer.Interval = TimeSpan.FromMilliseconds(50);
             simulationTimer.Tick += SimulationTimer_Tick;
 
+            string path = System.IO.Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                "אוריאל.mp4"
+            );
+
+            explosionSound = new SoundPlayer(path);
+            explosionSound.Load();
         }
         private void SimulationTimer_Tick(object? sender, EventArgs e)
         {
@@ -141,6 +156,7 @@ namespace IronDomeInterceptor
         }
         private void ShowExplosion(double worldX, double worldY)
         {
+            explosionSound.Play();
             Point point = WorldToCanvas(worldX, worldY);
 
             Ellipse outerExplosion = new Ellipse
@@ -168,7 +184,6 @@ namespace IronDomeInterceptor
                 FontWeight = FontWeights.Bold,
                 FontSize = 18
             };
-
             Canvas.SetLeft(outerExplosion, point.X - 10);
             Canvas.SetTop(outerExplosion, point.Y - 10);
 

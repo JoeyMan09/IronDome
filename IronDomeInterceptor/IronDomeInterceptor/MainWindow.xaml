@@ -34,7 +34,10 @@
             <ColumnDefinition Width="3*"/>
             <ColumnDefinition Width="380"/>
         </Grid.ColumnDefinitions>
-
+        <MediaElement x:Name="ExplosionAudio"
+              LoadedBehavior="Manual"
+              UnloadedBehavior="Stop"
+              Visibility="Hidden"/>
         <!-- ============================= -->
         <!-- INTERCEPTOR TACTICAL DISPLAY -->
         <!-- ============================= -->
