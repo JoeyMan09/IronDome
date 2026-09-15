@@ -17,8 +17,9 @@ namespace IronDomeCommandCenter
         public double Y { get; set; }
         public double Vx { get; set; }
         public double Vy { get; set; }
-
-        public TargetData(int id,string name, double x, double y, double vx, double vy)
+        
+        public Entitytype.EntityType EntityType { get; set; }
+        public TargetData(int id,string name, double x, double y, double vx, double vy,Entitytype.EntityType entitytype)
         {
             Id = id;
             Name = name;
@@ -26,6 +27,7 @@ namespace IronDomeCommandCenter
             Y = y;
             Vx = vx;
             Vy = vy;
+            EntityType = entitytype;
         }
         public double GetSpeed()
         {

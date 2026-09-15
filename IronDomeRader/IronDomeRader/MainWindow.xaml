@@ -7,188 +7,464 @@
         mc:Ignorable="d"
         Title="Iron Dome Radar System"
         WindowState="Maximized"
-        Background="#0B0F14">
+        Background="#070B10">
 
     <Window.Resources>
 
-        <Style TargetType="Button">
+        <Style x:Key="RadarButtonStyle" TargetType="Button">
             <Setter Property="Height" Value="42"/>
-            <Setter Property="Margin" Value="0,6,0,6"/>
-            <Setter Property="Background" Value="#18232F"/>
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Margin" Value="0,5,0,5"/>
+            <Setter Property="Background" Value="#111C18"/>
+            <Setter Property="Foreground" Value="#E2E8F0"/>
             <Setter Property="BorderBrush" Value="#22C55E"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Cursor" Value="Hand"/>
         </Style>
 
+        <Style x:Key="DangerButtonStyle" TargetType="Button">
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Margin" Value="0,5,0,5"/>
+            <Setter Property="Background" Value="#351316"/>
+            <Setter Property="Foreground" Value="#FCA5A5"/>
+            <Setter Property="BorderBrush" Value="#EF4444"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style x:Key="PanelBorder" TargetType="Border">
+            <Setter Property="Background" Value="#101720"/>
+            <Setter Property="BorderBrush" Value="#253748"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="12"/>
+        </Style>
+
+        <Style x:Key="SectionHeader" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#22C55E"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
         <Style TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#D8E3EC"/>
+            <Setter Property="Foreground" Value="#D5DEE8"/>
         </Style>
 
     </Window.Resources>
 
-    <Grid Margin="12">
+    <Grid>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="360"/>
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="68"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
 
-        <!-- ================= -->
-        <!-- RADAR DISPLAY -->
-        <!-- ================= -->
+        <!-- TOP BAR -->
 
-        <Border Grid.Column="0"
-                Margin="0,0,12,0"
-                Background="#020504"
-                BorderBrush="#1F3A2A"
-                BorderThickness="1"
-                CornerRadius="6">
+        <Border Grid.Row="0"
+                Background="#0D141D"
+                BorderBrush="#263746"
+                BorderThickness="0,0,0,1">
 
-            <Grid>
+            <Grid Margin="18,0">
 
-                <Canvas x:Name="RadarCanvas"
-                        Background="#020504"/>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-                <TextBlock Text="RADAR TRACKING SYSTEM"
-                           FontSize="18"
-                           FontWeight="Bold"
-                           Foreground="#22C55E"
-                           Margin="18"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Top"/>
+                <StackPanel Grid.Column="0"
+                            VerticalAlignment="Center">
+
+                    <TextBlock Text="IRON DOME"
+                               Foreground="#22C55E"
+                               FontSize="22"
+                               FontWeight="Bold"/>
+
+                    <TextBlock Text="RADAR TRACKING SYSTEM"
+                               Foreground="#64748B"
+                               FontSize="10"
+                               FontWeight="SemiBold"/>
+
+                </StackPanel>
+
+                <StackPanel Grid.Column="1"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+
+                    <TextBlock Text="AIR SURVEILLANCE &amp; TRACKING"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="#CBD5E1"/>
+
+                    <TextBlock Text="REAL-TIME DETECTION / CLASSIFICATION / TARGET TRANSFER"
+                               FontSize="9"
+                               Foreground="#64748B"
+                               HorizontalAlignment="Center"/>
+
+                </StackPanel>
+
+                <Border Grid.Column="2"
+                        Background="#12251B"
+                        BorderBrush="#22C55E"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="14,7"
+                        VerticalAlignment="Center">
+
+                    <StackPanel Orientation="Horizontal">
+
+                        <Ellipse Width="8"
+                                 Height="8"
+                                 Fill="#22C55E"
+                                 Margin="0,0,8,0"/>
+
+                        <TextBlock Text="RADAR READY"
+                                   Foreground="#86EFAC"
+                                   FontWeight="Bold"/>
+
+                    </StackPanel>
+
+                </Border>
 
             </Grid>
 
         </Border>
 
-        <!-- ================= -->
-        <!-- CONTROL PANEL -->
-        <!-- ================= -->
+        <!-- MAIN -->
 
-        <Grid Grid.Column="1">
+        <Grid Grid.Row="1"
+              Margin="12">
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="190"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="380"/>
+            </Grid.ColumnDefinitions>
 
-            <!-- SERVER STATUS -->
+            <!-- LEFT INFO PANEL -->
 
-            <Border Grid.Row="0"
-                    Background="#111820"
-                    BorderBrush="#263746"
-                    BorderThickness="1"
-                    CornerRadius="6"
-                    Padding="14"
-                    Margin="0,0,0,10">
+            <Border Grid.Column="0"
+                    Style="{StaticResource PanelBorder}"
+                    Margin="0,0,10,0">
 
                 <StackPanel>
 
-                    <TextBlock Text="NETWORK STATUS"
-                               FontSize="16"
+                    <TextBlock Text="RADAR STATUS"
+                               Style="{StaticResource SectionHeader}"/>
+
+                    <TextBlock Text="ACTIVE SURVEILLANCE"
+                               Foreground="#22C55E"
                                FontWeight="Bold"
-                               Foreground="#22C55E"/>
+                               FontSize="11"/>
 
-                    <Button x:Name="btnStartServer"
-                            Content="START RADAR SERVER"
-                            Click="btnStartServer_Click"/>
+                    <TextBlock Text="SWEEP MODE"
+                               Foreground="#64748B"
+                               FontSize="10"
+                               Margin="0,12,0,0"/>
 
-                    <TextBlock x:Name="txtStats"
-                               Text="Server: Offline"
-                               FontSize="13"
-                               Margin="0,8,0,0"
-                               Foreground="#F87171"/>
+                    <TextBlock Text="360°"
+                               Foreground="White"
+                               FontSize="20"
+                               FontWeight="Bold"/>
 
-                </StackPanel>
-
-            </Border>
-
-            <!-- SIMULATION CONTROLS -->
-
-            <Border Grid.Row="1"
-                    Background="#111820"
-                    BorderBrush="#263746"
-                    BorderThickness="1"
-                    CornerRadius="6"
-                    Padding="14"
-                    Margin="0,0,0,10">
-
-                <StackPanel>
-
-                    <TextBlock Text="SIMULATION CONTROL"
-                               FontSize="16"
-                               FontWeight="Bold"
-                               Foreground="#22C55E"/>
-
-                    <Button x:Name="btnStart"
-                            Content="START SIMULATION"
-                            Click="btnStart_Click"/>
-
-                    <Button x:Name="btnStop"
-                            Content="STOP SIMULATION"
-                            Background="#3A1619"
-                            BorderBrush="#EF4444"
-                            Click="btnStop_Click"/>
-
-                </StackPanel>
-
-            </Border>
-
-            <!-- TARGET ACTION -->
-
-            <Border Grid.Row="2"
-                    Background="#111820"
-                    BorderBrush="#263746"
-                    BorderThickness="1"
-                    CornerRadius="6"
-                    Padding="14">
-
-                <StackPanel>
-
-                    <TextBlock Text="TARGET CONTROL"
-                               FontSize="16"
-                               FontWeight="Bold"
-                               Foreground="#22C55E"/>
-
-                    <TextBlock Text="Select a target directly on the radar display."
-                               TextWrapping="Wrap"
-                               Margin="0,10,0,10"
-                               Foreground="#94A3B8"/>
-
-                    <Button x:Name="btnSenToCommand"
-                            Content="SEND SELECTED TARGET TO COMMAND"
-                            Background="#102A1C"
-                            BorderBrush="#22C55E"
-                            Click="btnSenToCommand_Click"/>
-
-                    <Separator Margin="0,12,0,12"
+                    <Separator Margin="0,14"
                                Background="#263746"/>
 
-                    <TextBlock Text="Entity List:"
-                               FontWeight="Bold"
-                               Foreground="#22C55E"
-                               Margin="0,0,0,8"/>
+                    <TextBlock Text="ENTITY TYPES"
+                               Style="{StaticResource SectionHeader}"/>
 
-                    <TextBlock Text="● Supersonic Missile"
-                               Foreground="Red"
-                               Margin="0,2"/>
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0,4">
+                        <Ellipse Width="8"
+                                 Height="8"
+                                 Fill="Red"
+                                 Margin="0,0,7,0"/>
+                        <TextBlock Text="Supersonic Missile"
+                                   FontSize="11"/>
+                    </StackPanel>
 
-                    <TextBlock Text="● Ballistic Missile"
-                               Foreground="Yellow"
-                               Margin="0,2"/>
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0,4">
+                        <Ellipse Width="8"
+                                 Height="8"
+                                 Fill="Yellow"
+                                 Margin="0,0,7,0"/>
+                        <TextBlock Text="Ballistic Missile"
+                                   FontSize="11"/>
+                    </StackPanel>
 
-                    <TextBlock Text="● Drone"
-                               Foreground="DodgerBlue"
-                               Margin="0,2"/>
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0,4">
+                        <Ellipse Width="8"
+                                 Height="8"
+                                 Fill="DodgerBlue"
+                                 Margin="0,0,7,0"/>
+                        <TextBlock Text="Drone / UAV"
+                                   FontSize="11"/>
+                    </StackPanel>
+
+                    <Separator Margin="0,14"
+                               Background="#263746"/>
+
+                    <TextBlock Text="SYSTEM"
+                               Style="{StaticResource SectionHeader}"/>
+
+                    <TextBlock Text="WORLD SIZE"
+                               Foreground="#64748B"
+                               FontSize="10"/>
+
+                    <TextBlock Text="50,000 units"
+                               Foreground="White"
+                               FontFamily="Consolas"
+                               FontSize="13"
+                               Margin="0,2,0,10"/>
+
+                    <TextBlock Text="REFRESH"
+                               Foreground="#64748B"
+                               FontSize="10"/>
+
+                    <TextBlock Text="30 ms"
+                               Foreground="White"
+                               FontFamily="Consolas"
+                               FontSize="13"/>
 
                 </StackPanel>
 
             </Border>
 
+            <!-- RADAR -->
+
+            <Border Grid.Column="1"
+                    Background="#020504"
+                    BorderBrush="#1F3A2A"
+                    BorderThickness="1"
+                    CornerRadius="5">
+
+                <Grid>
+
+                    <Canvas x:Name="RadarCanvas"
+                            Background="#020504"/>
+
+                    <Border HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Margin="14"
+                            Background="#E6111820"
+                            BorderBrush="#22C55E"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            Padding="10,6">
+
+                        <StackPanel>
+
+                            <TextBlock Text="LIVE RADAR DISPLAY"
+                                       Foreground="#22C55E"
+                                       FontSize="14"
+                                       FontWeight="Bold"/>
+
+                            <TextBlock Text="REAL-TIME AIRSPACE TRACKING"
+                                       Foreground="#64748B"
+                                       FontSize="9"/>
+
+                        </StackPanel>
+
+                    </Border>
+
+                    <Border HorizontalAlignment="Right"
+                            VerticalAlignment="Bottom"
+                            Margin="14"
+                            Background="#E6111820"
+                            BorderBrush="#263746"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            Padding="10">
+
+                        <StackPanel>
+
+                            <TextBlock Text="TRACKING STATUS"
+                                       Foreground="#22C55E"
+                                       FontWeight="Bold"/>
+
+                            <TextBlock Text="ACTIVE"
+                                       Foreground="#86EFAC"
+                                       FontSize="11"/>
+
+                        </StackPanel>
+
+                    </Border>
+
+                </Grid>
+
+            </Border>
+
+            <!-- RIGHT CONTROL PANEL -->
+
+            <Grid Grid.Column="2"
+                  Margin="10,0,0,0">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- NETWORK -->
+
+                <Border Grid.Row="0"
+                        Style="{StaticResource PanelBorder}"
+                        Margin="0,0,0,10">
+
+                    <StackPanel>
+
+                        <TextBlock Text="NETWORK STATUS"
+                                   Style="{StaticResource SectionHeader}"/>
+
+                        <Button x:Name="btnStartServer"
+                                Content="START RADAR SERVER"
+                                Style="{StaticResource RadarButtonStyle}"
+                                Click="btnStartServer_Click"/>
+
+                        <Separator Margin="0,7"
+                                   Background="#263746"/>
+
+                        <Grid>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="COMMAND LINK"
+                                       Foreground="#64748B"
+                                       FontSize="11"/>
+
+                            <TextBlock x:Name="txtStats"
+                                       Grid.Column="1"
+                                       Text="OFFLINE"
+                                       HorizontalAlignment="Right"
+                                       Foreground="#F87171"
+                                       FontWeight="Bold"
+                                       FontSize="11"/>
+
+                        </Grid>
+
+                    </StackPanel>
+
+                </Border>
+
+                <!-- SIMULATION -->
+
+                <Border Grid.Row="1"
+                        Style="{StaticResource PanelBorder}"
+                        Margin="0,0,0,10">
+
+                    <StackPanel>
+
+                        <TextBlock Text="SIMULATION CONTROL"
+                                   Style="{StaticResource SectionHeader}"/>
+
+                        <Button x:Name="btnStart"
+                                Content="START SIMULATION"
+                                Style="{StaticResource RadarButtonStyle}"
+                                Click="btnStart_Click"/>
+
+                        <Button x:Name="btnStop"
+                                Content="STOP SIMULATION"
+                                Style="{StaticResource DangerButtonStyle}"
+                                Click="btnStop_Click"/>
+
+                    </StackPanel>
+
+                </Border>
+
+                <!-- TARGET CONTROL -->
+
+                <Border Grid.Row="2"
+                        Style="{StaticResource PanelBorder}">
+
+                    <StackPanel>
+
+                        <TextBlock Text="TARGET CONTROL"
+                                   Style="{StaticResource SectionHeader}"/>
+
+                        <TextBlock Text="Select a target directly from the radar display."
+                                   TextWrapping="Wrap"
+                                   Foreground="#94A3B8"
+                                   FontSize="11"
+                                   Margin="0,0,0,10"/>
+
+                        <Button x:Name="btnSenToCommand"
+                                Content="SEND SELECTED TARGET"
+                                Style="{StaticResource RadarButtonStyle}"
+                                Click="btnSenToCommand_Click"/>
+
+                        <Button x:Name="btnSenAllToCommand"
+                                Content="SEND ALL TARGETS"
+                                Style="{StaticResource RadarButtonStyle}"
+                                Click="btnSenAllToCommand_Click"/>
+
+                        <Separator Margin="0,12"
+                                   Background="#263746"/>
+
+                        <TextBlock Text="TRANSFER MODE"
+                                   Foreground="#64748B"
+                                   FontSize="10"/>
+
+                        <TextBlock Text="MANUAL"
+                                   Foreground="#22C55E"
+                                   FontWeight="Bold"
+                                   FontSize="13"/>
+
+                    </StackPanel>
+
+                </Border>
+
+            </Grid>
+
         </Grid>
+
+        <!-- BOTTOM BAR -->
+
+        <Border Grid.Row="2"
+                Background="#0D141D"
+                BorderBrush="#263746"
+                BorderThickness="0,1,0,0">
+
+            <Grid Margin="14,0">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="IRON DOME RADAR SIMULATION"
+                           VerticalAlignment="Center"
+                           Foreground="#64748B"
+                           FontSize="10"/>
+
+                <TextBlock Grid.Column="1"
+                           Text="RADAR ●"
+                           Foreground="#22C55E"
+                           VerticalAlignment="Center"
+                           FontSize="10"
+                           Margin="0,0,20,0"/>
+
+                <TextBlock Grid.Column="2"
+                           Text="COMMAND LINK ●"
+                           Foreground="#38BDF8"
+                           VerticalAlignment="Center"
+                           FontSize="10"/>
+
+            </Grid>
+
+        </Border>
 
     </Grid>
 

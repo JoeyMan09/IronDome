@@ -272,7 +272,6 @@ namespace IronDomeRader
             if (selectedEntity == null)
             {
                 MessageBox.Show("Select a target first");
-
                 return;
             }
 
@@ -282,7 +281,9 @@ namespace IronDomeRader
                 selectedEntity.getX(),
                 selectedEntity.getY(),
                 selectedEntity.getVx(),
-                selectedEntity.getVy()
+                selectedEntity.getVy(),
+                selectedEntity.getThreatLvl(),
+                selectedEntity.GetEntityType()
             );
 
             await radarServer.SendTargetAsync(target);
@@ -291,6 +292,25 @@ namespace IronDomeRader
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
             StopRadar();
+        }
+
+        private async void btnSenAllToCommand_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (FlyingEntity entity in radarSystem.GetFlyingEntities())
+            {
+                TargetData target = new TargetData(
+                    entity.getId(),
+                    entity.getName(),
+                    entity.getX(),
+                    entity.getY(),
+                    entity.getVx(),
+                    entity.getVy(),
+                    entity.getThreatLvl(),
+                    entity.GetEntityType()
+                );
+
+                await radarServer.SendTargetAsync(target);
+            }
         }
 
         private void btnStart_Click(object sender, RoutedEventArgs e)

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -13,27 +11,46 @@ namespace IronDomeRader
     public struct TargetData
     {
         public int Id { get; set; }
+
         public string Name { get; set; }
+
         public double X { get; set; }
         public double Y { get; set; }
+
         public double Vx { get; set; }
         public double Vy { get; set; }
 
-        public TargetData(int id,
+        public ThreatLevel.threatLevel threatLevel { get; set; }
+
+        public EntityType.Entitytype EntityType { get; set; }
+
+
+        public TargetData(
+            int id,
             string name,
             double x,
             double y,
             double vx,
-            double vy)
+            double vy,
+            ThreatLevel.threatLevel threatLevel,
+            EntityType.Entitytype entityType)
         {
-            this.Id = id;
+            Id = id;
+
             Name = name;
+
             X = x;
             Y = y;
+
             Vx = vx;
             Vy = vy;
+
+            this.threatLevel = threatLevel;
+
+            EntityType = entityType;
         }
     }
+
 
     internal class RadarServer
     {
@@ -44,6 +61,7 @@ namespace IronDomeRader
 
         public NetworkStream stream;
 
+
         public RadarServer()
         {
             listener = new TcpListener(
@@ -52,6 +70,7 @@ namespace IronDomeRader
             );
         }
 
+
         public async Task RaderServerListenAsync()
         {
             listener.Start();
@@ -59,16 +78,21 @@ namespace IronDomeRader
             TcpClient commandClient =
                 await listener.AcceptTcpClientAsync();
 
-            stream = commandClient.GetStream();
+            stream =
+                commandClient.GetStream();
         }
 
-        public async Task SendTargetAsync(TargetData target)
+
+        public async Task SendTargetAsync(
+            TargetData target)
         {
             string json =
                 JsonSerializer.Serialize(target);
 
             byte[] data =
-                Encoding.UTF8.GetBytes(json + "\n");
+                Encoding.UTF8.GetBytes(
+                    json + "\n"
+                );
 
             await stream.WriteAsync(
                 data,

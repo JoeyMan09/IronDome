@@ -7,181 +7,609 @@
         mc:Ignorable="d"
         Title="Iron Dome Command Center"
         WindowState="Maximized"
-        Background="#0B0F14">
+        Background="#070B10">
 
     <Window.Resources>
 
-        <Style TargetType="Button">
+        <Style x:Key="CommandButtonStyle"
+               TargetType="Button">
             <Setter Property="Height" Value="42"/>
-            <Setter Property="Margin" Value="0,6,0,6"/>
-            <Setter Property="Background" Value="#18232F"/>
-            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Margin" Value="0,5,0,5"/>
+            <Setter Property="Background" Value="#111C27"/>
+            <Setter Property="Foreground" Value="#E2E8F0"/>
             <Setter Property="BorderBrush" Value="#38BDF8"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Cursor" Value="Hand"/>
         </Style>
 
+        <Style x:Key="DangerButtonStyle"
+               TargetType="Button">
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="Margin" Value="0,5,0,5"/>
+            <Setter Property="Background" Value="#351316"/>
+            <Setter Property="Foreground" Value="#FCA5A5"/>
+            <Setter Property="BorderBrush" Value="#EF4444"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <Style x:Key="SectionHeader"
+               TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#38BDF8"/>
+            <Setter Property="FontSize" Value="15"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="0,0,0,8"/>
+        </Style>
+
+        <Style x:Key="PanelBorder"
+               TargetType="Border">
+            <Setter Property="Background" Value="#101720"/>
+            <Setter Property="BorderBrush" Value="#253748"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="4"/>
+            <Setter Property="Padding" Value="12"/>
+        </Style>
+
         <Style TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#D8E3EC"/>
+            <Setter Property="Foreground" Value="#D5DEE8"/>
         </Style>
 
     </Window.Resources>
 
-    <Grid Margin="12">
+    <Grid>
 
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*"/>
-            <ColumnDefinition Width="380"/>
-        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="68"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="30"/>
+        </Grid.RowDefinitions>
 
-        <!-- ===================== -->
-        <!-- COMMAND MAP / CANVAS -->
-        <!-- ===================== -->
+        <!-- ========================= -->
+        <!-- TOP HEADER -->
+        <!-- ========================= -->
 
-        <Border Grid.Column="0"
-                Margin="0,0,12,0"
+        <Border Grid.Row="0"
+                Background="#0D141D"
                 BorderBrush="#263746"
-                BorderThickness="1"
-                CornerRadius="6"
-                Background="#05080B">
+                BorderThickness="0,0,0,1">
 
-            <Grid>
+            <Grid Margin="18,0">
 
-                <Canvas x:Name="CommandCanvas"
-                        Background="#05080B"/>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-                <TextBlock Text="COMMAND CENTER - OPERATIONAL MAP"
-                           FontSize="18"
-                           FontWeight="Bold"
-                           Foreground="#38BDF8"
-                           Margin="18"
-                           HorizontalAlignment="Left"
-                           VerticalAlignment="Top"/>
+                <StackPanel Grid.Column="0"
+                            VerticalAlignment="Center">
+
+                    <TextBlock Text="IRON DOME"
+                               Foreground="#38BDF8"
+                               FontSize="22"
+                               FontWeight="Bold"/>
+
+                    <TextBlock Text="COMMAND &amp; CONTROL CENTER"
+                               Foreground="#64748B"
+                               FontSize="10"
+                               FontWeight="SemiBold"/>
+
+                </StackPanel>
+
+                <StackPanel Grid.Column="1"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center">
+
+                    <TextBlock Text="AIR DEFENSE OPERATIONAL PICTURE"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="#CBD5E1"/>
+
+                    <TextBlock Text="LIVE TRACKING / THREAT EVALUATION / INTERCEPTION CONTROL"
+                               HorizontalAlignment="Center"
+                               FontSize="9"
+                               Foreground="#64748B"/>
+
+                </StackPanel>
+
+                <Border Grid.Column="2"
+                        Background="#12251B"
+                        BorderBrush="#22C55E"
+                        BorderThickness="1"
+                        CornerRadius="4"
+                        Padding="14,7"
+                        VerticalAlignment="Center">
+
+                    <StackPanel Orientation="Horizontal">
+
+                        <Ellipse Width="8"
+                                 Height="8"
+                                 Fill="#22C55E"
+                                 Margin="0,0,8,0"/>
+
+                        <TextBlock Text="SYSTEM ONLINE"
+                                   Foreground="#86EFAC"
+                                   FontWeight="Bold"/>
+
+                    </StackPanel>
+
+                </Border>
 
             </Grid>
 
         </Border>
 
-        <!-- ================= -->
-        <!-- RIGHT SIDE PANEL -->
-        <!-- ================= -->
+        <!-- ========================= -->
+        <!-- MAIN CONTENT -->
+        <!-- ========================= -->
 
-        <Grid Grid.Column="1">
+        <Grid Grid.Row="1"
+              Margin="12">
 
-            <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="Auto"/>
-            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
 
+                <!-- Left info -->
+                <ColumnDefinition Width="190"/>
 
-            <!-- CONNECTION -->
+                <!-- Map -->
+                <ColumnDefinition Width="*"/>
 
-            <Border Grid.Row="0"
-                    Background="#111820"
-                    BorderBrush="#263746"
-                    BorderThickness="1"
-                    CornerRadius="6"
-                    Padding="14"
-                    Margin="0,0,0,10">
+                <!-- Map info -->
+                <ColumnDefinition Width="190"/>
+
+                <!-- Main right control panel -->
+                <ColumnDefinition Width="390"/>
+
+            </Grid.ColumnDefinitions>
+
+            <!-- ========================= -->
+            <!-- LEFT MAP PANEL -->
+            <!-- ========================= -->
+
+            <Border Grid.Column="0"
+                    Style="{StaticResource PanelBorder}"
+                    Margin="0,0,10,0">
 
                 <StackPanel>
 
-                    <TextBlock Text="SYSTEM STATUS"
-                               FontSize="16"
-                               FontWeight="Bold"
-                               Foreground="#38BDF8"/>
+                    <TextBlock Text="OPERATIONAL AIR PICTURE"
+                               Style="{StaticResource SectionHeader}"
+                               TextWrapping="Wrap"/>
 
-                    <Button x:Name="ConnectToRadar"
-                            Content="CONNECT TO RADAR"
-                            Click="btnConnect_Click"/>
-                    <Button x:Name="btnStartInterceptorServer"
-        Content="START INTERCEPTOR SERVER"
-        Click="btnStartInterceptorServer_Click"/>
-                    <TextBlock x:Name="txtStats"
-                               Text="Radar: Disconnected"
-                               Margin="0,8,0,0"
-                               FontSize="13"
-                               Foreground="#F87171"/>
+                    <TextBlock Text="ISRAEL / REGIONAL AIRSPACE"
+                               Foreground="#64748B"
+                               FontSize="10"/>
+
+                    <Separator Margin="0,14"
+                               Background="#263746"/>
+
+                    <TextBlock Text="TACTICAL LEGEND"
+                               Style="{StaticResource SectionHeader}"/>
+
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0,4">
+
+                        <Ellipse Width="8"
+                                 Height="8"
+                                 Fill="#EF4444"
+                                 Margin="0,0,7,0"/>
+
+                        <TextBlock Text="Supersonic"
+                                   FontSize="11"/>
+
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0,4">
+
+                        <Ellipse Width="8"
+                                 Height="8"
+                                 Fill="#FACC15"
+                                 Margin="0,0,7,0"/>
+
+                        <TextBlock Text="Ballistic"
+                                   FontSize="11"/>
+
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0,4">
+
+                        <Ellipse Width="8"
+                                 Height="8"
+                                 Fill="#3B82F6"
+                                 Margin="0,0,7,0"/>
+
+                        <TextBlock Text="Drone / UAV"
+                                   FontSize="11"/>
+
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal"
+                                Margin="0,4">
+
+                        <Ellipse Width="8"
+                                 Height="8"
+                                 Fill="#22C55E"
+                                 Margin="0,0,7,0"/>
+
+                        <TextBlock Text="Interceptor"
+                                   FontSize="11"/>
+
+                    </StackPanel>
+
+                    <TextBlock Text="✕ Predicted Impact"
+                               Foreground="#F97316"
+                               FontSize="11"
+                               Margin="0,7,0,0"/>
+
+                    <Separator Margin="0,16"
+                               Background="#263746"/>
+
+                    <TextBlock Text="MAP STATUS"
+                               Style="{StaticResource SectionHeader}"/>
+
+                    <TextBlock Text="TRACKING ENABLED"
+                               Foreground="#22C55E"
+                               FontWeight="Bold"
+                               FontSize="11"/>
+
+                    <TextBlock Text="AUTO REFRESH"
+                               Foreground="#64748B"
+                               FontSize="10"
+                               Margin="0,5,0,0"/>
+
+                    <TextBlock Text="50 ms"
+                               Foreground="White"
+                               FontFamily="Consolas"
+                               FontSize="14"/>
 
                 </StackPanel>
 
             </Border>
 
+            <!-- ========================= -->
+            <!-- MAP -->
+            <!-- ========================= -->
 
-            <!-- TARGET LIST -->
-
-            <Border Grid.Row="1"
-                    Background="#111820"
+            <Border Grid.Column="1"
+                    Background="#05080B"
                     BorderBrush="#263746"
                     BorderThickness="1"
-                    CornerRadius="6"
-                    Padding="14"
-                    Margin="0,0,0,10">
+                    CornerRadius="5">
 
                 <Grid>
 
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
+                    <!-- IMPORTANT:
+                         Keep map and Canvas in exactly the same Grid -->
 
-                    <TextBlock Text="TRACKED TARGETS"
-                               FontSize="16"
-                               FontWeight="Bold"
-                               Foreground="#38BDF8"
-                               Margin="0,0,0,10"/>
+                    <Image x:Name="IsraelMap"
+                           Source="C:\Users\idank\source\repos\IronDome\IronDomeSystem\IronDomeCommandCenter\IronDomeCommandCenter\map - Copy.png"
+                           Stretch="Uniform"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           Opacity="0.9"/>
 
-                    <ListBox x:Name="lstTargets"
-                             Grid.Row="1"
-                             SelectionChanged="lstTargets_SelectionChanged"
-                             Background="#0A1016"
-                             Foreground="White"
-                             BorderBrush="#263746"
-                             BorderThickness="1"
-                             FontFamily="Consolas"
-                             FontSize="12"/>
+                    <!-- Dynamic missiles / interceptors / impact points -->
+
+                    <Canvas x:Name="CommandCanvas"
+                            Background="Transparent"/>
+
+                    <!-- small map title -->
+
+                    <Border HorizontalAlignment="Left"
+                            VerticalAlignment="Top"
+                            Margin="12"
+                            Background="#E6111820"
+                            BorderBrush="#38BDF8"
+                            BorderThickness="1"
+                            CornerRadius="4"
+                            Padding="10,6">
+
+                        <StackPanel>
+
+                            <TextBlock Text="LIVE OPERATIONAL MAP"
+                                       Foreground="#38BDF8"
+                                       FontWeight="Bold"
+                                       FontSize="14"/>
+
+                            <TextBlock Text="TARGET &amp; INTERCEPT TRACKING"
+                                       Foreground="#64748B"
+                                       FontSize="9"/>
+
+                        </StackPanel>
+
+                    </Border>
 
                 </Grid>
 
             </Border>
 
+            <!-- ========================= -->
+            <!-- MAP INFO PANEL -->
+            <!-- ========================= -->
 
-            <!-- SELECTED TARGET -->
-
-            <Border Grid.Row="2"
-                    Background="#111820"
-                    BorderBrush="#263746"
-                    BorderThickness="1"
-                    CornerRadius="6"
-                    Padding="14">
+            <Border Grid.Column="2"
+                    Style="{StaticResource PanelBorder}"
+                    Margin="10,0">
 
                 <StackPanel>
 
-                    <TextBlock Text="SELECTED TARGET"
-                               FontSize="16"
+                    <TextBlock Text="LIVE MAP"
+                               Style="{StaticResource SectionHeader}"/>
+
+                    <TextBlock Text="TRACKING ENABLED"
+                               Foreground="#22C55E"
                                FontWeight="Bold"
-                               Foreground="#38BDF8"/>
+                               FontSize="11"/>
 
-                    <TextBlock x:Name="txtSelectedTarget"
-                               Text="No target selected"
-                               Margin="0,12,0,12"
+                    <Separator Margin="0,14"
+                               Background="#263746"/>
+
+                    <TextBlock Text="THREAT SUMMARY"
+                               Style="{StaticResource SectionHeader}"/>
+
+                    <TextBlock Text="Active Targets"
+                               Foreground="#64748B"
+                               FontSize="10"/>
+
+                    <TextBlock x:Name="txtActiveTargetCount"
+                               Text="0"
+                               Foreground="White"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Margin="0,0,0,12"/>
+
+                    <TextBlock Text="Highest Priority"
+                               Foreground="#64748B"
+                               FontSize="10"/>
+
+                    <TextBlock Text="-"
+                               Foreground="#EF4444"
+                               FontWeight="Bold"
                                FontSize="14"
-                               FontFamily="Consolas"
-                               TextWrapping="Wrap"/>
+                               Margin="0,0,0,12"/>
 
-                    <Button x:Name="btnIntercept"
-                            Content="INTERCEPT TARGET"
-                            Background="#3A1619"
-                            BorderBrush="#EF4444"
-                            Click="btnIntercept_Click" />
-                        
+                    <TextBlock Text="Nearest Impact"
+                               Foreground="#64748B"
+                               FontSize="10"/>
+
+                    <TextBlock Text="-"
+                               Foreground="#F97316"
+                               FontFamily="Consolas"
+                               FontSize="13"/>
+
+                    <Separator Margin="0,14"
+                               Background="#263746"/>
+
+                    <TextBlock Text="MAP OBJECTS"
+                               Style="{StaticResource SectionHeader}"/>
+
+                    <TextBlock Text="● Launch Point"
+                               Foreground="#F87171"
+                               FontSize="11"
+                               Margin="0,3"/>
+
+                    <TextBlock Text="● Current Position"
+                               Foreground="#FACC15"
+                               FontSize="11"
+                               Margin="0,3"/>
+
+                    <TextBlock Text="✕ Impact Point"
+                               Foreground="#F97316"
+                               FontSize="11"
+                               Margin="0,3"/>
+
+                    <TextBlock Text="● Interceptor"
+                               Foreground="#22C55E"
+                               FontSize="11"
+                               Margin="0,3"/>
+
                 </StackPanel>
 
             </Border>
 
+            <!-- ========================= -->
+            <!-- RIGHT CONTROL PANEL -->
+            <!-- ========================= -->
+
+            <Grid Grid.Column="3">
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- STATUS -->
+
+                <Border Grid.Row="0"
+                        Style="{StaticResource PanelBorder}"
+                        Margin="0,0,0,10">
+
+                    <StackPanel>
+
+                        <TextBlock Text="SYSTEM STATUS"
+                                   Style="{StaticResource SectionHeader}"/>
+
+                        <Button x:Name="ConnectToRadar"
+                                Content="CONNECT TO RADAR"
+                                Style="{StaticResource CommandButtonStyle}"
+                                Click="btnConnect_Click"/>
+
+                        <Button x:Name="btnStartInterceptorServer"
+                                Content="START INTERCEPTOR LINK"
+                                Style="{StaticResource CommandButtonStyle}"
+                                Click="btnStartInterceptorServer_Click"/>
+
+                        <Separator Margin="0,7"
+                                   Background="#263746"/>
+
+                        <Grid>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="RADAR LINK"
+                                       Foreground="#64748B"
+                                       FontSize="11"/>
+
+                            <TextBlock x:Name="txtStats"
+                                       Grid.Column="1"
+                                       Text="DISCONNECTED"
+                                       HorizontalAlignment="Right"
+                                       Foreground="#F87171"
+                                       FontWeight="Bold"
+                                       FontSize="11"/>
+
+                        </Grid>
+
+                    </StackPanel>
+
+                </Border>
+
+                <!-- TARGET LIST -->
+
+                <Border Grid.Row="1"
+                        Style="{StaticResource PanelBorder}"
+                        Margin="0,0,0,10">
+
+                    <Grid>
+
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <Grid>
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <TextBlock Text="TRACKED TARGETS"
+                                       Style="{StaticResource SectionHeader}"/>
+
+                            <Border Grid.Column="1"
+                                    Background="#251318"
+                                    BorderBrush="#EF4444"
+                                    BorderThickness="1"
+                                    CornerRadius="10"
+                                    Padding="8,2"
+                                    Margin="0,0,0,8">
+
+                                <TextBlock Text="THREATS"
+                                           Foreground="#FCA5A5"
+                                           FontSize="9"
+                                           FontWeight="Bold"/>
+
+                            </Border>
+
+                        </Grid>
+
+                        <ListBox x:Name="lstTargets"
+                                 Grid.Row="1"
+                                 SelectionChanged="lstTargets_SelectionChanged"
+                                 Background="#080D13"
+                                 Foreground="#E2E8F0"
+                                 BorderBrush="#263746"
+                                 BorderThickness="1"
+                                 FontFamily="Consolas"
+                                 FontSize="12"
+                                 Padding="4"/>
+
+                    </Grid>
+
+                </Border>
+
+                <!-- TARGET ANALYSIS -->
+
+                <Border Grid.Row="2"
+                        Style="{StaticResource PanelBorder}">
+
+                    <StackPanel>
+
+                        <TextBlock Text="TARGET ANALYSIS"
+                                   Style="{StaticResource SectionHeader}"/>
+
+                        <Border Background="#080D13"
+                                BorderBrush="#263746"
+                                BorderThickness="1"
+                                CornerRadius="3"
+                                Padding="10"
+                                Margin="0,0,0,10">
+
+                            <TextBlock x:Name="txtSelectedTarget"
+                                       Text="NO TARGET SELECTED"
+                                       FontSize="12"
+                                       FontFamily="Consolas"
+                                       TextWrapping="Wrap"/>
+
+                        </Border>
+
+                        <Button x:Name="btnIntercept"
+                                Content="INTERCEPT SELECTED TARGET"
+                                Style="{StaticResource DangerButtonStyle}"
+                                Click="btnIntercept_Click"/>
+
+                        <Button x:Name="btnInterceptAll"
+                                Content="INTERCEPT ALL PRIORITY TARGETS"
+                                Style="{StaticResource DangerButtonStyle}"
+                                Click="btnInterceptAll_Click"/>
+
+                    </StackPanel>
+
+                </Border>
+
+            </Grid>
+
         </Grid>
+
+        <!-- ========================= -->
+        <!-- BOTTOM STATUS -->
+        <!-- ========================= -->
+
+        <Border Grid.Row="2"
+                Background="#0D141D"
+                BorderBrush="#263746"
+                BorderThickness="0,1,0,0">
+
+            <Grid Margin="14,0">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <TextBlock Text="IRON DOME SIMULATION SYSTEM"
+                           VerticalAlignment="Center"
+                           Foreground="#64748B"
+                           FontSize="10"/>
+
+                <TextBlock Grid.Column="1"
+                           Text="RADAR ●"
+                           VerticalAlignment="Center"
+                           Foreground="#38BDF8"
+                           FontSize="10"
+                           Margin="0,0,20,0"/>
+
+                <TextBlock Grid.Column="2"
+                           Text="INTERCEPTOR ●"
+                           VerticalAlignment="Center"
+                           Foreground="#F59E0B"
+                           FontSize="10"/>
+
+            </Grid>
+
+        </Border>
 
     </Grid>
 

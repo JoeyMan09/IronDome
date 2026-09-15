@@ -1,14 +1,7 @@
 ﻿namespace IronDomeRader.Flying_Entity.Missle
 {
-    abstract class Missile : FlyingEntity
+    internal class Missile : FlyingEntity
     {
-        protected ThreatLevel.threatLevel threatLevel;
-        protected bool isDestroyed;
-
-        public ThreatLevel.threatLevel ThreatLevel => threatLevel;
-
-        public bool IsDestroyed => isDestroyed;
-
         protected Missile(
             double x,
             double y,
@@ -16,12 +9,21 @@
             double vx,
             double vy,
             ThreatLevel.threatLevel threatLevel,
-            double size)
-            : base(x, y, name, vx, vy, size)
+            double size,
+            EntityType.Entitytype type)
+            : base(
+                x,
+                y,
+                name,
+                vx,
+                vy,
+                size,
+                threatLevel,
+                type)
         {
-            this.threatLevel = threatLevel;
             this.isDestroyed = false;
         }
+
 
         public virtual void Destroy()
         {

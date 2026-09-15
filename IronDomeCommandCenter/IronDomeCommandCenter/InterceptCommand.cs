@@ -18,14 +18,21 @@ namespace IronDomeCommandCenter
         public double TargetVx { get; set; }
         public double TargetVy { get; set; }
 
+        public Entitytype.EntityType EntityType { get; set; }
+
         public InterceptCommand(TargetData target)
         {
             CommandId = ClassId++;
-            TargetId =target.Id;
+
+            TargetId = target.Id;
+
             TargetX = target.X;
             TargetY = target.Y;
+
             TargetVx = target.Vx;
             TargetVy = target.Vy;
+
+            EntityType = target.EntityType;
         }
     }
 }

@@ -9,11 +9,14 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace IronDomeCommandCenter
 {
     public partial class MainWindow : Window
     {
+        private DispatcherTimer simulationTimer;
+        private const double dt = 0.05;
         private CommandClient commandClient;
         private Dictionary<int, TargetData> targets;
         private TargetData? selectedTarget;
@@ -24,12 +27,19 @@ namespace IronDomeCommandCenter
             targets = new Dictionary<int, TargetData>();
             commandClient = new CommandClient();
             interceptorServer = new InterceptorServer();
+            simulationTimer = new DispatcherTimer();
+            simulationTimer.Interval = TimeSpan.FromMilliseconds(50);
+            simulationTimer.Tick += SimulationTimer_Tick;
         }
         private async void btnConnect_Click(object sender, RoutedEventArgs e)
         {
             await commandClient.ConnectToRadarAsync();
+
             txtStats.Text = "Connected";
             txtStats.Foreground = Brushes.Green;
+
+            simulationTimer.Start();
+
             await ListenToRadarAsync();
         }
         private async Task ListenToRadarAsync()
@@ -106,6 +116,40 @@ namespace IronDomeCommandCenter
 
 
         }
+        private void SimulationTimer_Tick(object? sender, EventArgs e)
+        {
+            List<int> ids = targets.Keys.ToList();
+
+            foreach (int id in ids)
+            {
+                TargetData target = targets[id];
+
+                target.X += target.Vx * dt;
+                target.Y += target.Vy * dt;
+
+                targets[id] = target;
+            }
+
+            UpdateTargetList();
+
+            if (selectedTarget != null)
+            {
+                int selectedId = selectedTarget.Value.Id;
+
+                if (targets.ContainsKey(selectedId))
+                {
+                    selectedTarget = targets[selectedId];
+                    PrintSelectedTarget();
+                }
+            }
+
+            DrawCommandMap();
+        }
+
+        private void DrawCommandMap()
+        {
+            
+        }
 
         private async void btnIntercept_Click(object sender, RoutedEventArgs e)
         {
@@ -114,14 +158,31 @@ namespace IronDomeCommandCenter
                 MessageBox.Show("Select a target first");
                 return;
             }
-            InterceptCommand intercept= new InterceptCommand(selectedTarget.Value);
+
+            // בדיקה זמנית
+            MessageBox.Show(
+                $"Name: {selectedTarget.Value.Name}\n" +
+                $"EntityType: {selectedTarget.Value.EntityType}"
+            );
+
+            InterceptCommand intercept = new InterceptCommand(selectedTarget.Value);
+
             await interceptorServer.SendInterceptCommandAsync(intercept);
         }
-        private async void btnStartInterceptorServer_Click(
-    object sender,
-    RoutedEventArgs e)
+        private async void btnStartInterceptorServer_Click( object sender,RoutedEventArgs e)
         {
             await interceptorServer.CommandServerListenAsync();
+        }
+
+        private async void btnInterceptAll_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (TargetData target in targets.Values)
+            {
+                InterceptCommand intercept =
+                    new InterceptCommand(target);
+
+                await interceptorServer.SendInterceptCommandAsync(intercept);
+            }
         }
     }
 }

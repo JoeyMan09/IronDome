@@ -8,4 +8,18 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="ballistic.png" />
+    <None Remove="drone.png" />
+    <None Remove="interceptor.png" />
+    <None Remove="supersonic.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="ballistic.png" />
+    <Resource Include="drone.png" />
+    <Resource Include="interceptor.png" />
+    <Resource Include="supersonic.png" />
+  </ItemGroup>
+
 </Project>

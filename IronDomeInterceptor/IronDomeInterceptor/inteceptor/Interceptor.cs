@@ -15,8 +15,8 @@ namespace IronDomeInterceptor.inteceptor
         private bool isEngaged;
         private bool HasIntercepedTarget;
 
-        public Interceptor(double x, double y, string name, double Vx, double Vy, double size, double interceptionRange)
-            : base(x, y, name, Vx, Vy, size)
+        public Interceptor(double x, double y, string name, double Vx, double Vy, double size, double interceptionRange,EntityType.Entitytype type)
+            : base(x, y, name, Vx, Vy, size,type)
         {
             this.interceptionRange = interceptionRange;
             target = null;

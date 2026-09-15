@@ -12,11 +12,16 @@
             string name,
             double vx,
             double vy,
-            double size,
-            double altitude,
-            double fuel,
-            bool isFriendly)
-            : base(x, y, name, vx, vy, size)
+            double size, double altitude, double fuel, bool isFriendly)
+            : base(
+                x,
+                y,
+                name,
+                vx,
+                vy,
+                size,
+                ThreatLevel.threatLevel.no,
+                EntityType.Entitytype.drone)
         {
             this.altitude = altitude;
             this.fuel = fuel;

@@ -137,19 +137,23 @@ namespace IronDomeRader
                 double speed = rand.Next(350, 700);
                 double vx = speed * directionX;
                 double vy = speed * directionY;
-                DetectFlyingEntity(new SupersonicMissile(
-                    x, y,
-                    "Supersonic" + flyingEntitiesDetected.Count,
-                    vx,
-                    vy,
-                    rand.Next(100, 300),
-                    rand.Next(100, 500),
-                    rand.Next(0, 360),
-                    ThreatLevel.threatLevel.Supersonic_Missile,
-                    rand.Next(10, 30),
-                    30000,
-                    20000
-                ));
+                DetectFlyingEntity(
+    new SupersonicMissile(
+        x,
+        y,
+        "Supersonic" + flyingEntitiesDetected.Count,
+        vx,
+        vy,
+        rand.Next(100, 300),
+        rand.Next(100, 500),
+        rand.Next(0, 360),
+        ThreatLevel.threatLevel.Supersonic_Missile,
+        rand.Next(10, 30),
+        30000,   // maxAltitude
+        20000,   // supersonicAltitude
+        50000    // maxRange
+    )
+);
             }
             else
             {

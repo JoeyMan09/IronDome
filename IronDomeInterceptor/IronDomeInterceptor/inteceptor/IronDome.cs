@@ -13,8 +13,8 @@ namespace IronDomeInterceptor.inteceptor
         private int interceporCount;
         private const int succsessRate = 90; // 90% success rate for interception
 
-        public IronDome(double x, double y, string name, double Vx, double Vy, double size, double interceptionRange, double batteryLocationX, double batteryLocationY)
-            : base(x, y, name, Vx, Vy, size, interceptionRange)
+        public IronDome(double x, double y, string name, double Vx, double Vy, double size, double interceptionRange, double batteryLocationX, double batteryLocationY,EntityType.Entitytype type)
+            : base(x, y, name, Vx, Vy, size, interceptionRange, type)
         {
             this.batteryLocationX = batteryLocationX;
             this.batteryLocationY = batteryLocationY;

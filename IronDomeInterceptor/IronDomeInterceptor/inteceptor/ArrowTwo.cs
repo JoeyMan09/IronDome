@@ -13,8 +13,8 @@ namespace IronDomeInterceptor.inteceptor
         public enum WarheadType { Explosive = 1, Fragmentation = 2 }
         private WarheadType warheadType;
 
-        public ArrowTwo(double x, double y, string name, double Vx, double Vy, double size, double interceptionRange, double batteryLocationX, double batteryLocationY, double reactionTime, WarheadType warheadType)
-            : base(x, y, name, Vx, Vy, size, interceptionRange, batteryLocationX, batteryLocationY)
+        public ArrowTwo(double x, double y, string name, double Vx, double Vy, double size, double interceptionRange, double batteryLocationX, double batteryLocationY, double reactionTime, WarheadType warheadType, EntityType.Entitytype type)
+            : base(x, y, name, Vx, Vy, size, interceptionRange, batteryLocationX, batteryLocationY,type)
         {
             ReactionTime = reactionTime;
             this.warheadType = warheadType;

@@ -4,31 +4,39 @@ namespace IronDomeRader.Flying_Entity.Missle
 {
     internal class SupersonicMissile : BallisticMissile
     {
-        protected double MaxRange;
         private double traveledDistance;
-
+        private double MaxRange;
         private const double SpeedOfSound = 343;
 
-        public SupersonicMissile(
-            double x,
-            double y,
-            string name,
-            double vx,
-            double vy,
-            double explosionRadius,
-            double explosivePayload,
-            double launchAngle,
-            ThreatLevel.threatLevel threatLevel,
-            double size,
-            double maxRange,
-            double maxAltitude)
-            : base(x, y, name, vx, vy, explosionRadius,
-                   explosivePayload, launchAngle,
-                   threatLevel, size, maxAltitude)
+       public SupersonicMissile(
+    double x,
+    double y,
+    string name,
+    double vx,
+    double vy,
+    double explosionRadius,
+    double explosivePayload,
+    double launchAngle,
+    ThreatLevel.threatLevel threatLevel,
+    double size,
+    double maxAltitude,
+    double supersonicAltitude,double maxrange)
+    : base(
+        x,
+        y,
+        name,
+        vx,
+        vy,
+        explosionRadius,
+        explosivePayload,
+        launchAngle,
+        threatLevel,
+        size,
+        maxAltitude,
+        EntityType.Entitytype.supersonic)
         {
-            MaxRange = maxRange;
             traveledDistance = 0;
-
+            this.MaxRange = maxrange;
             NormalizeSpeed(); // 🔥 חשוב מאוד
         }
 

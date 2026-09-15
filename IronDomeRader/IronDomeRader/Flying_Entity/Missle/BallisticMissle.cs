@@ -4,6 +4,7 @@ namespace IronDomeRader.Flying_Entity.Missle
 {
     internal class BallisticMissile : Missile
     {
+
         protected double explosionRadius;
         protected double explosivePayload;
         protected double launchAngle;
@@ -16,18 +17,27 @@ namespace IronDomeRader.Flying_Entity.Missle
         private double traveledDistance;
 
         public BallisticMissile(
-            double x,
-            double y,
-            string name,
-            double vx,
-            double vy,
-            double explosionRadius,
-            double explosivePayload,
-            double launchAngle,
-            ThreatLevel.threatLevel threatLevel,
-            double size,
-            double maxAltitude)
-            : base(x, y, name, vx, vy, threatLevel, size)
+     double x,
+     double y,
+     string name,
+     double vx,
+     double vy,
+     double explosionRadius,
+     double explosivePayload,
+     double launchAngle,
+     ThreatLevel.threatLevel threatLevel,
+     double size,
+     double maxAltitude,
+     EntityType.Entitytype type = EntityType.Entitytype.ballistic)
+     : base(
+         x,
+         y,
+         name,
+         vx,
+         vy,
+         threatLevel,
+         size,
+         type)
         {
             this.explosionRadius = explosionRadius;
             this.explosivePayload = explosivePayload;

@@ -10,8 +10,8 @@ namespace IronDomeInterceptor.inteceptor
     {
         private double minExoAtmosphereicAltitude; // Minimum altitude at which the interceptor can operate effectively
         private bool boostPhaseCapable; // Indicates if the interceptor can operate during the boost phase of a missile's flight
-        public ArrowThree(double x, double y, string name, double Vx, double Vy, double size, double interceptionRange, double batteryLocationX, double batteryLocationY, double reactionTime, WarheadType warheadType, double minExoAtmosphericAltitude, bool boostPhaseCapable)
-            : base(x, y, name, Vx, Vy, size, interceptionRange, batteryLocationX, batteryLocationY, reactionTime, warheadType)
+        public ArrowThree(double x, double y, string name, double Vx, double Vy, double size, double interceptionRange, double batteryLocationX, double batteryLocationY, double reactionTime, WarheadType warheadType, double minExoAtmosphericAltitude, bool boostPhaseCapable,EntityType.Entitytype type)
+            : base(x, y, name, Vx, Vy, size, interceptionRange, batteryLocationX, batteryLocationY, reactionTime, warheadType, type)
         {
             minExoAtmosphereicAltitude = minExoAtmosphericAltitude;
             this.boostPhaseCapable = boostPhaseCapable;

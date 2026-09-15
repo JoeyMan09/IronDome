@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 
 namespace IronDomeRader
 {
-    public class ThreatLevel
+    public class EntityType
     {
-        public enum threatLevel
+        public enum Entitytype
         {
-            Ballistic_Missile=1,
-            Supersonic_Missile=2,
-            Drone = 3,
-            no =4
+            drone,
+            ballistic,
+            supersonic
         }
     }
 }
