@@ -103,18 +103,28 @@ namespace IronDomeCommandCenter
         private void PrintSelectedTarget()
         {
             if (selectedTarget == null)
+            {
+                txtSelectedTarget.Text = "NO TARGET SELECTED";
                 return;
+            }
 
             TargetData target = selectedTarget.Value;
 
+            string friendlyText;
+
+            if (target.isFriendly)
+                friendlyText = "YES";
+            else
+                friendlyText = "NO";
+
             txtSelectedTarget.Text =
-            $"TARGET ID: {target.Id}\n" +
-            $"TYPE:      {target.Name}\n" +
-            $"POSITION:  ({target.X:F0}, {target.Y:F0})\n" +
-            $"VELOCITY:  ({target.Vx:F0}, {target.Vy:F0})\n" +
-            $"SPEED:     {target.GetSpeed():F0} m/s";
-
-
+                $"TARGET ID:  {target.Id}\n" +
+                $"FRIENDLY:   {friendlyText}\n" +
+                $"TYPE:       {target.Name}\n" +
+                $"ENTITY:     {target.EntityType}\n" +
+                $"POSITION:   ({target.X:F0}, {target.Y:F0})\n" +
+                $"VELOCITY:   ({target.Vx:F0}, {target.Vy:F0})\n" +
+                $"SPEED:      {target.GetSpeed():F0} m/s";
         }
         private void SimulationTimer_Tick(object? sender, EventArgs e)
         {
@@ -159,11 +169,7 @@ namespace IronDomeCommandCenter
                 return;
             }
 
-            // בדיקה זמנית
-            MessageBox.Show(
-                $"Name: {selectedTarget.Value.Name}\n" +
-                $"EntityType: {selectedTarget.Value.EntityType}"
-            );
+            
 
             InterceptCommand intercept = new InterceptCommand(selectedTarget.Value);
 

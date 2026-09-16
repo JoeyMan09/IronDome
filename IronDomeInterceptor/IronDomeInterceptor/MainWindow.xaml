@@ -552,7 +552,7 @@
                     <Button x:Name="btnAbort"
                             Content="ABORT SELECTED INTERCEPT"
                             Style="{StaticResource DangerButtonStyle}"
-                            Click="btnAbort_Click"/>
+                            Click="btnAbortAll_Click"/>
 
                 </Border>
 

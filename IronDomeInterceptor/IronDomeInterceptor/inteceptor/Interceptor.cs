@@ -16,7 +16,7 @@ namespace IronDomeInterceptor.inteceptor
         private bool HasIntercepedTarget;
 
         public Interceptor(double x, double y, string name, double Vx, double Vy, double size, double interceptionRange,EntityType.Entitytype type)
-            : base(x, y, name, Vx, Vy, size,type)
+            : base(x, y, name, Vx, Vy, size,type, true)
         {
             this.interceptionRange = interceptionRange;
             target = null;
@@ -47,6 +47,17 @@ namespace IronDomeInterceptor.inteceptor
                 this.target = target;
                 isEngaged = true;
                 Console.WriteLine($"{name} has engaged target {target.getName()}");
+            }
+        }
+        public virtual void DisEngageTarget()
+        {
+            if (target != null)
+            {
+                target = null;
+                isEngaged = false;
+                Vx = 0;
+                Vy = 0;
+
             }
         }
         public override void UpdatePosition(double time)

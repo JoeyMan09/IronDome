@@ -10,7 +10,7 @@ namespace IronDomeCommandCenter
     {
         public enum EntityType
         {
-            drone, ballistic, supersonic
+            drone, ballistic, supersonic, aircraft
         }
     }
 }

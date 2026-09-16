@@ -16,7 +16,7 @@
             double size,
             double surveillanceRange,
             double payloadCapacity)
-            : base(x, y, name, vx, vy, size, 50, 100, true)
+            : base(x, y, name, vx, vy, size, 50, 100, false,EntityType.Entitytype.drone)
         {
             SurveillanceRange = surveillanceRange;
             PayloadCapacity = payloadCapacity;

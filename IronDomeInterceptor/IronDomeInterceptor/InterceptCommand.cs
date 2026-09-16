@@ -15,7 +15,7 @@
         public double TargetVy { get; set; }
 
         public EntityType.Entitytype EntityType { get; set; }
-
+        public bool isFriendly { get; set; }
 
         // חשוב ל-JSON
         public InterceptCommand()
@@ -30,7 +30,7 @@
             double targetY,
             double targetVx,
             double targetVy,
-            EntityType.Entitytype entityType)
+            EntityType.Entitytype entityType,bool isFriendly)
         {
             CommandId = commandId;
 
@@ -43,6 +43,7 @@
             TargetVy = targetVy;
 
             EntityType = entityType;
+            this.isFriendly = isFriendly;
         }
     }
 }

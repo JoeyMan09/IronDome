@@ -21,7 +21,7 @@ namespace IronDomeInterceptor
         protected EntityType.Entitytype type;
 
         protected bool isDestroyed;
-
+        protected bool isFriendly;
 
         public FlyingEntity(
             double x,
@@ -30,7 +30,8 @@ namespace IronDomeInterceptor
             double Vx,
             double Vy,
             double size,
-            EntityType.Entitytype type)
+            EntityType.Entitytype type,
+            bool isFriendly)
         {
             this.id = ClassId++;
 
@@ -47,6 +48,7 @@ namespace IronDomeInterceptor
             this.type = type;
 
             isDestroyed = false;
+            this.isFriendly = isFriendly;
         }
 
 
@@ -105,7 +107,10 @@ namespace IronDomeInterceptor
             return id;
         }
 
-
+        public bool getIsFriendly()
+        {
+            return isFriendly;
+        }
         public EntityType.Entitytype GetEntityType()
         {
             return type;

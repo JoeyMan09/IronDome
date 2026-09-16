@@ -16,7 +16,7 @@ namespace IronDomeRader.Flying_Entity
 
         protected ThreatLevel.threatLevel threat;
         protected EntityType.Entitytype type;
-
+        protected bool isFriendly;
         protected bool isDestroyed;
 
         public FlyingEntity(
@@ -27,7 +27,8 @@ namespace IronDomeRader.Flying_Entity
             double Vy,
             double size,
             ThreatLevel.threatLevel threatLevel,
-            EntityType.Entitytype type)
+            EntityType.Entitytype type,
+            bool isFriendly)
         {
             this.id = ClassId++;
 
@@ -45,13 +46,17 @@ namespace IronDomeRader.Flying_Entity
             this.type = type;
 
             isDestroyed = false;
+            this.isFriendly = isFriendly;
         }
 
         public string getName()
         {
             return name;
         }
-
+        public bool getIsFriendly()
+        {
+            return isFriendly;
+        }
         public double getX()
         {
             return x;
@@ -127,6 +132,10 @@ namespace IronDomeRader.Flying_Entity
                 return double.PositiveInfinity;
 
             return distance / getSpeed();
+        }
+        public bool IsFriendly()
+        {
+            return isFriendly;
         }
 
         public override string ToString()

@@ -7,6 +7,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using System.Windows;
 namespace IronDomeCommandCenter
 {
     struct TargetData
@@ -19,7 +20,8 @@ namespace IronDomeCommandCenter
         public double Vy { get; set; }
         
         public Entitytype.EntityType EntityType { get; set; }
-        public TargetData(int id,string name, double x, double y, double vx, double vy,Entitytype.EntityType entitytype)
+        public bool isFriendly { get; set; }
+        public TargetData(int id,string name, double x, double y, double vx, double vy,Entitytype.EntityType entitytype,bool isFriendly)
         {
             Id = id;
             Name = name;
@@ -28,6 +30,7 @@ namespace IronDomeCommandCenter
             Vx = vx;
             Vy = vy;
             EntityType = entitytype;
+            this.isFriendly=isFriendly;
         }
         public double GetSpeed()
         {
@@ -66,12 +69,21 @@ namespace IronDomeCommandCenter
         public async Task<TargetData?> CommandClientReadAsync()
         {
             string? json = await reader.ReadLineAsync();
-            if (json == null)
-            {
-                return null;
-            }
 
-            TargetData target = JsonSerializer.Deserialize<TargetData>(json);
+            if (json == null)
+                return null;
+
+            //MessageBox.Show(json);
+
+            TargetData target =
+                JsonSerializer.Deserialize<TargetData>(json);
+
+            //MessageBox.Show(
+            //    $"ID: {target.Id}\n" +
+            //    $"Name: {target.Name}\n" +
+            //    $"Friendly: {target.isFriendly}\n" +
+            //    $"EntityType: {target.EntityType}"
+            //);
 
             return target;
         }

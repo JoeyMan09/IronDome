@@ -19,7 +19,7 @@ namespace IronDomeCommandCenter
         public double TargetVy { get; set; }
 
         public Entitytype.EntityType EntityType { get; set; }
-
+        public bool isFriendly {  get; set; }
         public InterceptCommand(TargetData target)
         {
             CommandId = ClassId++;
@@ -33,6 +33,7 @@ namespace IronDomeCommandCenter
             TargetVy = target.Vy;
 
             EntityType = target.EntityType;
+            isFriendly = target.isFriendly;
         }
     }
 }

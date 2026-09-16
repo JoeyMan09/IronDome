@@ -230,7 +230,8 @@ namespace IronDomeRader
 
                 else if (entity is Drone)
                     dot.Fill = Brushes.Blue;
-
+                else
+                    dot.Fill= Brushes.Green;
                 dot.MouseLeftButtonDown +=
                     Dot_MouseLeftButtonDown;
 
@@ -274,7 +275,6 @@ namespace IronDomeRader
                 MessageBox.Show("Select a target first");
                 return;
             }
-
             TargetData target = new TargetData(
                 selectedEntity.getId(),
                 selectedEntity.getName(),
@@ -283,7 +283,9 @@ namespace IronDomeRader
                 selectedEntity.getVx(),
                 selectedEntity.getVy(),
                 selectedEntity.getThreatLvl(),
-                selectedEntity.GetEntityType()
+                selectedEntity.GetEntityType(),
+                selectedEntity.getIsFriendly()
+                
             );
 
             await radarServer.SendTargetAsync(target);
@@ -306,7 +308,7 @@ namespace IronDomeRader
                     entity.getVx(),
                     entity.getVy(),
                     entity.getThreatLvl(),
-                    entity.GetEntityType()
+                    entity.GetEntityType(), entity.getIsFriendly()
                 );
 
                 await radarServer.SendTargetAsync(target);

@@ -10,7 +10,7 @@ namespace IronDomeInterceptor
     {
         public enum Entitytype
         {
-            drone, ballistic, supersonic, interceptor
+            drone, ballistic, supersonic, interceptor, aircraft
         }
     }
 }

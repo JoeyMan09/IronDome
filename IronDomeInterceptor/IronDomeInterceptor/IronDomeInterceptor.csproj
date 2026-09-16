@@ -9,15 +9,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="AirCraft.png" />
     <None Remove="ballistic.png" />
     <None Remove="drone.png" />
+    <None Remove="fighter.png" />
     <None Remove="interceptor.png" />
     <None Remove="supersonic.png" />
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="AirCraft.png" />
     <Resource Include="ballistic.png" />
     <Resource Include="drone.png" />
+    <Resource Include="fighter.png" />
     <Resource Include="interceptor.png" />
     <Resource Include="supersonic.png" />
   </ItemGroup>

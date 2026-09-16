@@ -12,7 +12,7 @@ namespace IronDomeRader
         {
             drone,
             ballistic,
-            supersonic
+            supersonic,aircraft
         }
     }
 }

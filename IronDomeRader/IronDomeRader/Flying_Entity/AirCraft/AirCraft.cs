@@ -4,7 +4,6 @@
     {
         protected double altitude;
         protected double fuel;
-        protected bool isFriendly;
 
         public AirCraft(
             double x,
@@ -12,7 +11,7 @@
             string name,
             double vx,
             double vy,
-            double size, double altitude, double fuel, bool isFriendly)
+            double size, double altitude, double fuel, bool isFriendly, EntityType.Entitytype type)
             : base(
                 x,
                 y,
@@ -21,11 +20,10 @@
                 vy,
                 size,
                 ThreatLevel.threatLevel.no,
-                EntityType.Entitytype.drone)
+                type,isFriendly)
         {
             this.altitude = altitude;
             this.fuel = fuel;
-            this.isFriendly = isFriendly;
         }
 
         public override void UpdatePosition(double dt)
@@ -51,10 +49,7 @@
             return fuel;
         }
 
-        public bool IsFriendly()
-        {
-            return isFriendly;
-        }
+        
 
         public bool IsOutOfFuel()
         {

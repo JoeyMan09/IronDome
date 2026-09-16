@@ -23,7 +23,7 @@ namespace IronDomeRader
         public ThreatLevel.threatLevel threatLevel { get; set; }
 
         public EntityType.Entitytype EntityType { get; set; }
-
+        public bool isFriendly {  get; set; }
 
         public TargetData(
             int id,
@@ -33,7 +33,7 @@ namespace IronDomeRader
             double vx,
             double vy,
             ThreatLevel.threatLevel threatLevel,
-            EntityType.Entitytype entityType)
+            EntityType.Entitytype entityType,bool friend)
         {
             Id = id;
 
@@ -48,6 +48,7 @@ namespace IronDomeRader
             this.threatLevel = threatLevel;
 
             EntityType = entityType;
+            isFriendly= friend;
         }
     }
 

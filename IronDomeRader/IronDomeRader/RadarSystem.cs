@@ -91,7 +91,8 @@ namespace IronDomeRader
 
         public void SpawnFlyingEntity(Random rand)
         {
-            int type = rand.Next(0, 3);
+            int type = rand.Next(0, 4);
+            //int type = 3;
             double angle = rand.NextDouble() * 2 * Math.PI;
             double radius = WorldSize / 2;
 
@@ -155,7 +156,7 @@ namespace IronDomeRader
     )
 );
             }
-            else
+            else if(type==2)
             {
                 
                 double directionX = -x;
@@ -179,6 +180,30 @@ namespace IronDomeRader
                     10000,
                     10
                 ));
+            }
+            else
+            {
+                double directionX = -x;
+                double directionY = -y;
+                double length = Math.Sqrt(directionX * directionX + directionY * directionY);
+                if (length > 0)
+                {
+                    directionX /= length;
+                    directionY /= length;
+                }
+                double speed = rand.Next(50, 150);
+                double vx = speed * directionX;
+                double vy = speed * directionY;
+                double fuel = rand.Next(1000, 2000);
+                int friendly = rand.Next(0, 2);
+                bool isfriendly;
+                if (friendly == 0)
+                {
+                 isfriendly = false;   
+                }
+                else
+                    isfriendly = true;
+                DetectFlyingEntity(new AirCraft(x, y, "Aircarft " + flyingEntitiesDetected.Count + 1, vx, vy, 1, fuel, rand.Next(1000, 3000), isfriendly, EntityType.Entitytype.aircraft));
             }
         }
 

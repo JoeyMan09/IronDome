@@ -24,6 +24,7 @@ namespace IronDomeInterceptor
 
         private List<Point> targetTrail = new List<Point>();
         private List<Point> interceptorTrail = new List<Point>();
+        private List<Point> MarkerX = new List<Point>();
 
 
         public MainWindow()
@@ -541,18 +542,24 @@ namespace IronDomeInterceptor
                     imagePath = "drone.png";
                     break;
 
+                case EntityType.Entitytype.aircraft:
+                    if (entity.getIsFriendly())
+                        imagePath = "AirCraft.png";
+                    else
+                        imagePath = "fighter.png";
+                    break;
+
                 default:
-                    throw new Exception(
-                        $"Unknown EntityType: {type}"
-                    );
+                    imagePath = "fighter.png";
+                    break;
             }
 
-            Image image = new Image();
-
-            image.Width = 32;
-            image.Height = 32;
-
-            image.Stretch = Stretch.Uniform;
+            Image image = new Image
+            {
+                Width = 32,
+                Height = 32,
+                Stretch = Stretch.Uniform
+            };
 
             image.Source = new BitmapImage(
                 new Uri(
@@ -661,9 +668,11 @@ namespace IronDomeInterceptor
                         command.TargetVx,
                         command.TargetVy,
                         1,
-                        command.EntityType
+                        command.EntityType,command.isFriendly
                     );
-                Interceptor interceptor =
+                if (!target.getIsFriendly())
+                {
+                    Interceptor interceptor =
                     new Interceptor(
                         0,
                         0,
@@ -674,10 +683,7 @@ namespace IronDomeInterceptor
                         1,
                         1000,
                         EntityType.Entitytype.interceptor
-                    );
-
-
-                interceptor.EngageTarget(
+                    );interceptor.EngageTarget(
                     target
                 );
 
@@ -689,6 +695,11 @@ namespace IronDomeInterceptor
                 interceptors.Add(
                     interceptor
                 );
+                }
+                
+
+
+                
 
 
                 UpdateInterceptorList();
@@ -886,8 +897,131 @@ namespace IronDomeInterceptor
                     interceptorIcon.Height / 2
                 );
             }
-        }
+            for (int i = 0; i < interceptors.Count; i++)
+            {
+                FlyingEntity target = interceptors[i].GetTarget();
 
+                if (target == null)
+                    continue;
+
+                Point p = CalcX(
+                    interceptors[i],
+                    target
+                );
+
+                if (double.IsNaN(p.X) || double.IsNaN(p.Y))
+                    continue;
+
+                DrawX(p);
+            }
+        }
+        private void DrawX(Point worldPoint)
+        {
+            Point p = WorldToCanvas(
+                worldPoint.X,
+                worldPoint.Y
+            );
+
+            double size = 8;
+
+            Line line1 = new Line
+            {
+                X1 = p.X - size,
+                Y1 = p.Y - size,
+                X2 = p.X + size,
+                Y2 = p.Y + size,
+
+                Stroke = Brushes.Red,
+                StrokeThickness = 2
+            };
+
+            Line line2 = new Line
+            {
+                X1 = p.X - size,
+                Y1 = p.Y + size,
+                X2 = p.X + size,
+                Y2 = p.Y - size,
+
+                Stroke = Brushes.Red,
+                StrokeThickness = 2
+            };
+
+            InterceptorCanvas.Children.Add(line1);
+            InterceptorCanvas.Children.Add(line2);
+        }
+        private Point CalcX(Interceptor interceptor, FlyingEntity flyingEntity)
+        {
+            double tx = flyingEntity.getX();
+            double ty = flyingEntity.getY();
+
+            double tvx = flyingEntity.getVx();
+            double tvy = flyingEntity.getVy();
+
+            double ix = interceptor.getX();
+            double iy = interceptor.getY();
+
+            double interceptorSpeed = interceptor.getSpeed();
+
+            // המרחק ההתחלתי בין המיירט למטרה
+            double dx = tx - ix;
+            double dy = ty - iy;
+
+            // משוואה ריבועית:
+            // |targetPosition + targetVelocity*t - interceptorPosition|
+            //      = interceptorSpeed * t
+
+            double a =
+                tvx * tvx +
+                tvy * tvy -
+                interceptorSpeed * interceptorSpeed;
+
+            double b =
+                2 * (dx * tvx + dy * tvy);
+
+            double c =
+                dx * dx +
+                dy * dy;
+
+            double discriminant =
+                b * b - 4 * a * c;
+
+            // אין נקודת יירוט אפשרית
+            if (discriminant < 0)
+                return new Point(double.NaN, double.NaN);
+
+            double sqrt =
+                Math.Sqrt(discriminant);
+
+            double t1 =
+                (-b - sqrt) / (2 * a);
+
+            double t2 =
+                (-b + sqrt) / (2 * a);
+
+            // רוצים את הזמן החיובי הקטן ביותר
+            double t = double.PositiveInfinity;
+
+            if (t1 > 0)
+                t = t1;
+
+            if (t2 > 0 && t2 < t)
+                t = t2;
+
+            if (double.IsInfinity(t))
+                return new Point(double.NaN, double.NaN);
+
+            // איפה המטרה תהיה בזמן t
+            double interceptX =
+                tx + tvx * t;
+
+            double interceptY =
+                ty + tvy * t;
+
+            return new Point(
+                interceptX,
+                interceptY
+            );
+        }
 
         // =========================================================
         // ABORT
@@ -899,11 +1033,22 @@ namespace IronDomeInterceptor
 
             return angleDegrees + 90;
         }
-        private void btnAbort_Click(
-            object sender,
-            RoutedEventArgs e)
+        private void btnAbortAll_Click(
+    object sender,
+    RoutedEventArgs e)
         {
-            // We'll implement this later
+            foreach (Interceptor interceptor in interceptors)
+            {
+                interceptor.DisEngageTarget();
+            }
+
+            interceptors.Clear();
+            interceptorTrail.Clear();
+            MarkerX.Clear();
+
+            DrawSimulation();
+
+            txtState.Text = "ABORTED";
         }
     }
 }

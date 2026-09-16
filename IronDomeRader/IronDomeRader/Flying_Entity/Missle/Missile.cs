@@ -19,7 +19,7 @@
                 vy,
                 size,
                 threatLevel,
-                type)
+                type,false)
         {
             this.isDestroyed = false;
         }
