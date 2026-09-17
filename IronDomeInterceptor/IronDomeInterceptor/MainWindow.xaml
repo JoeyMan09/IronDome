@@ -11,7 +11,10 @@
 
     <Window.Resources>
 
-        <Style x:Key="InterceptorButtonStyle" TargetType="Button">
+        <!-- INTERCEPTOR BUTTON -->
+        <Style x:Key="InterceptorButtonStyle"
+               TargetType="Button">
+
             <Setter Property="Height" Value="42"/>
             <Setter Property="Margin" Value="0,5,0,5"/>
             <Setter Property="Background" Value="#1A1610"/>
@@ -21,9 +24,14 @@
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Cursor" Value="Hand"/>
+
         </Style>
 
-        <Style x:Key="DangerButtonStyle" TargetType="Button">
+
+        <!-- DANGER BUTTON -->
+        <Style x:Key="DangerButtonStyle"
+               TargetType="Button">
+
             <Setter Property="Height" Value="44"/>
             <Setter Property="Margin" Value="0,5,0,5"/>
             <Setter Property="Background" Value="#351316"/>
@@ -33,43 +41,76 @@
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="Cursor" Value="Hand"/>
+
         </Style>
 
-        <Style x:Key="PanelBorder" TargetType="Border">
+
+        <!-- PANEL -->
+        <Style x:Key="PanelBorder"
+               TargetType="Border">
+
             <Setter Property="Background" Value="#101720"/>
             <Setter Property="BorderBrush" Value="#253748"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="CornerRadius" Value="4"/>
             <Setter Property="Padding" Value="12"/>
+
         </Style>
 
-        <Style x:Key="SectionHeader" TargetType="TextBlock">
+
+        <!-- SECTION HEADER -->
+        <Style x:Key="SectionHeader"
+               TargetType="TextBlock">
+
             <Setter Property="Foreground" Value="#F59E0B"/>
             <Setter Property="FontSize" Value="15"/>
             <Setter Property="FontWeight" Value="Bold"/>
             <Setter Property="Margin" Value="0,0,0,8"/>
+
         </Style>
 
+
+        <!-- DEFAULT TEXT -->
         <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="#D5DEE8"/>
         </Style>
 
     </Window.Resources>
 
+
+    <!-- ====================================================== -->
+    <!-- MAIN GRID -->
+    <!-- ====================================================== -->
+
     <Grid>
 
         <Grid.RowDefinitions>
+
+            <!-- TOP -->
             <RowDefinition Height="68"/>
+
+            <!-- MAIN -->
             <RowDefinition Height="*"/>
+
+            <!-- STATUS -->
             <RowDefinition Height="30"/>
+
         </Grid.RowDefinitions>
+
+
+        <!-- ================================================== -->
+        <!-- AUDIO -->
+        <!-- ================================================== -->
 
         <MediaElement x:Name="ExplosionAudio"
                       LoadedBehavior="Manual"
                       UnloadedBehavior="Stop"
                       Visibility="Hidden"/>
 
+
+        <!-- ================================================== -->
         <!-- TOP BAR -->
+        <!-- ================================================== -->
 
         <Border Grid.Row="0"
                 Background="#0D141D"
@@ -79,10 +120,15 @@
             <Grid Margin="18,0">
 
                 <Grid.ColumnDefinitions>
+
                     <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
+
                 </Grid.ColumnDefinitions>
+
+
+                <!-- LOGO -->
 
                 <StackPanel Grid.Column="0"
                             VerticalAlignment="Center">
@@ -99,6 +145,9 @@
 
                 </StackPanel>
 
+
+                <!-- TITLE -->
+
                 <StackPanel Grid.Column="1"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center">
@@ -114,6 +163,9 @@
                                HorizontalAlignment="Center"/>
 
                 </StackPanel>
+
+
+                <!-- READY STATUS -->
 
                 <Border Grid.Column="2"
                         Background="#1F1B10"
@@ -142,18 +194,26 @@
 
         </Border>
 
+
+        <!-- ================================================== -->
         <!-- MAIN CONTENT -->
+        <!-- ================================================== -->
 
         <Grid Grid.Row="1"
               Margin="12">
 
             <Grid.ColumnDefinitions>
+
                 <ColumnDefinition Width="190"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="390"/>
+
             </Grid.ColumnDefinitions>
 
-            <!-- LEFT INFO -->
+
+            <!-- ================================================== -->
+            <!-- LEFT PANEL -->
+            <!-- ================================================== -->
 
             <Border Grid.Column="0"
                     Style="{StaticResource PanelBorder}"
@@ -164,6 +224,7 @@
                     <TextBlock Text="ENGAGEMENT STATUS"
                                Style="{StaticResource SectionHeader}"/>
 
+
                     <TextBlock Text="SYSTEM"
                                Foreground="#64748B"
                                FontSize="10"/>
@@ -173,52 +234,82 @@
                                FontWeight="Bold"
                                FontSize="15"/>
 
+
                     <Separator Margin="0,14"
                                Background="#263746"/>
+
+
+                    <!-- LEGEND -->
 
                     <TextBlock Text="TACTICAL LEGEND"
                                Style="{StaticResource SectionHeader}"/>
 
+
+                    <!-- TARGET -->
+
                     <StackPanel Orientation="Horizontal"
                                 Margin="0,4">
+
                         <Ellipse Width="8"
                                  Height="8"
                                  Fill="#EF4444"
                                  Margin="0,0,7,0"/>
+
                         <TextBlock Text="Target"
                                    FontSize="11"/>
+
                     </StackPanel>
+
+
+                    <!-- INTERCEPTOR -->
 
                     <StackPanel Orientation="Horizontal"
                                 Margin="0,4">
+
                         <Ellipse Width="8"
                                  Height="8"
                                  Fill="#F59E0B"
                                  Margin="0,0,7,0"/>
+
                         <TextBlock Text="Interceptor"
                                    FontSize="11"/>
+
                     </StackPanel>
+
+
+                    <!-- BATTERY -->
 
                     <StackPanel Orientation="Horizontal"
                                 Margin="0,4">
+
                         <Rectangle Width="8"
                                    Height="8"
                                    Fill="#22C55E"
                                    Margin="0,0,7,0"/>
+
                         <TextBlock Text="Battery"
                                    FontSize="11"/>
+
                     </StackPanel>
+
+
+                    <!-- INTERCEPT POINT -->
 
                     <TextBlock Text="✕ Predicted Intercept"
                                Foreground="#38BDF8"
                                FontSize="11"
                                Margin="0,6,0,0"/>
 
+
                     <Separator Margin="0,14"
                                Background="#263746"/>
 
+
+                    <!-- SIMULATION -->
+
                     <TextBlock Text="SIMULATION"
                                Style="{StaticResource SectionHeader}"/>
+
 
                     <TextBlock Text="UPDATE RATE"
                                Foreground="#64748B"
@@ -229,6 +320,7 @@
                                FontFamily="Consolas"
                                FontSize="13"
                                Margin="0,2,0,10"/>
+
 
                     <TextBlock Text="MODE"
                                Foreground="#64748B"
@@ -243,7 +335,10 @@
 
             </Border>
 
+
+            <!-- ================================================== -->
             <!-- TACTICAL VIEW -->
+            <!-- ================================================== -->
 
             <Border Grid.Column="1"
                     Background="#05080B"
@@ -253,7 +348,8 @@
 
                 <Grid>
 
-                    <!-- Tactical grid -->
+
+                    <!-- GRID BACKGROUND -->
 
                     <Grid Opacity="0.18"
                           IsHitTestVisible="False">
@@ -269,8 +365,10 @@
                                     <GeometryDrawing Brush="Transparent">
 
                                         <GeometryDrawing.Pen>
+
                                             <Pen Brush="#374151"
                                                  Thickness="0.5"/>
+
                                         </GeometryDrawing.Pen>
 
                                         <GeometryDrawing.Geometry>
@@ -297,10 +395,14 @@
 
                     </Grid>
 
+
+                    <!-- SIMULATION CANVAS -->
+
                     <Canvas x:Name="InterceptorCanvas"
                             Background="Transparent"/>
 
-                    <!-- Header -->
+
+                    <!-- MAP HEADER -->
 
                     <Border HorizontalAlignment="Left"
                             VerticalAlignment="Top"
@@ -326,7 +428,8 @@
 
                     </Border>
 
-                    <!-- Battery marker -->
+
+                    <!-- BATTERY -->
 
                     <Border HorizontalAlignment="Center"
                             VerticalAlignment="Center"
@@ -338,7 +441,8 @@
                             CornerRadius="2"
                             IsHitTestVisible="False"/>
 
-                    <!-- Map status -->
+
+                    <!-- MAP STATUS -->
 
                     <Border HorizontalAlignment="Right"
                             VerticalAlignment="Bottom"
@@ -371,17 +475,23 @@
 
             </Border>
 
-            <!-- RIGHT CONTROL PANEL -->
+
+            <!-- ================================================== -->
+            <!-- RIGHT PANEL -->
+            <!-- ================================================== -->
 
             <Grid Grid.Column="2"
                   Margin="10,0,0,0">
 
                 <Grid.RowDefinitions>
+
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
+
                 </Grid.RowDefinitions>
+
 
                 <!-- CONNECTION -->
 
@@ -399,15 +509,20 @@
                                 Style="{StaticResource InterceptorButtonStyle}"
                                 Click="btnConnectToCommand_Click"/>
 
+
                         <Separator Margin="0,7"
                                    Background="#263746"/>
+
 
                         <Grid>
 
                             <Grid.ColumnDefinitions>
+
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
+
                             </Grid.ColumnDefinitions>
+
 
                             <TextBlock Text="COMMAND LINK"
                                        Foreground="#64748B"
@@ -426,6 +541,7 @@
                     </StackPanel>
 
                 </Border>
+
 
                 <!-- CURRENT COMMAND -->
 
@@ -456,6 +572,7 @@
 
                 </Border>
 
+
                 <!-- TELEMETRY -->
 
                 <Border Grid.Row="2"
@@ -465,20 +582,25 @@
                     <Grid>
 
                         <Grid.RowDefinitions>
+
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="120"/>
                             <RowDefinition Height="*"/>
+
                         </Grid.RowDefinitions>
+
 
                         <TextBlock Text="LIVE TELEMETRY"
                                    Style="{StaticResource SectionHeader}"/>
+
 
                         <TextBlock Grid.Row="1"
                                    Text="ACTIVE INTERCEPTORS"
                                    Foreground="#94A3B8"
                                    FontSize="10"
                                    Margin="0,2,0,5"/>
+
 
                         <ListBox x:Name="lstInterceptors"
                                  Grid.Row="2"
@@ -491,10 +613,12 @@
                                  FontSize="11"
                                  Margin="0,0,0,10"/>
 
+
                         <ScrollViewer Grid.Row="3"
                                       VerticalScrollBarVisibility="Auto">
 
                             <StackPanel>
+
 
                                 <TextBlock x:Name="txtInterceptStatus"
                                            Text="SYSTEM IDLE"
@@ -503,12 +627,15 @@
                                            TextWrapping="Wrap"
                                            Margin="0,0,0,10"/>
 
+
                                 <Separator Background="#263746"
                                            Margin="0,4,0,10"/>
+
 
                                 <TextBlock Text="INTERCEPT STATE"
                                            Foreground="#64748B"
                                            FontSize="10"/>
+
 
                                 <TextBlock x:Name="txtState"
                                            Text="READY"
@@ -517,9 +644,11 @@
                                            FontWeight="Bold"
                                            Margin="0,2,0,10"/>
 
+
                                 <TextBlock Text="DISTANCE TO TARGET"
                                            Foreground="#64748B"
                                            FontSize="10"/>
+
 
                                 <TextBlock x:Name="txtDistance"
                                            Text="-"
@@ -527,9 +656,11 @@
                                            FontSize="16"
                                            Margin="0,2,0,10"/>
 
+
                                 <TextBlock Text="TIME TO INTERCEPT"
                                            Foreground="#64748B"
                                            FontSize="10"/>
+
 
                                 <TextBlock x:Name="txtTimeToIntercept"
                                            Text="-"
@@ -543,6 +674,7 @@
                     </Grid>
 
                 </Border>
+
 
                 <!-- ABORT -->
 
@@ -560,7 +692,10 @@
 
         </Grid>
 
-        <!-- BOTTOM STATUS -->
+
+        <!-- ================================================== -->
+        <!-- BOTTOM STATUS BAR -->
+        <!-- ================================================== -->
 
         <Border Grid.Row="2"
                 Background="#0D141D"
@@ -570,24 +705,96 @@
             <Grid Margin="14,0">
 
                 <Grid.ColumnDefinitions>
+
+                    <!-- SECRET BUTTON -->
+                    <ColumnDefinition Width="Auto"/>
+
+                    <!-- SYSTEM NAME -->
                     <ColumnDefinition Width="*"/>
+
+                    <!-- COMMAND -->
                     <ColumnDefinition Width="Auto"/>
+
+                    <!-- INTERCEPTOR -->
                     <ColumnDefinition Width="Auto"/>
+
                 </Grid.ColumnDefinitions>
 
-                <TextBlock Text="IRON DOME INTERCEPTOR SIMULATION"
+
+                <!-- ================================================== -->
+                <!-- SECRET BOOM -->
+                <!-- ================================================== -->
+
+                <Button x:Name="btnBoom"
+                        Grid.Column="0"
+                        Content="BOOM"
+                        Width="38"
+                        Height="16"
+                        Margin="0,0,8,0"
+                        Padding="0"
+                        VerticalAlignment="Center"
+                        Background="#7F1D1D"
+                        Foreground="White"
+                        BorderBrush="#EF4444"
+                        BorderThickness="1"
+                        FontSize="7"
+                        FontWeight="Bold"
+                        Cursor="Hand"
+                        Click="btnBoom_Click">
+
+                    <Button.Style>
+
+                        <Style TargetType="Button">
+
+                            <!-- INVISIBLE -->
+                            <Setter Property="Opacity"
+                                    Value="0"/>
+
+                            <!-- APPEARS ON HOVER -->
+                            <Style.Triggers>
+
+                                <Trigger Property="IsMouseOver"
+                                         Value="True">
+
+                                    <Setter Property="Opacity"
+                                            Value="1"/>
+
+                                    <Setter Property="Background"
+                                            Value="#991B1B"/>
+
+                                </Trigger>
+
+                            </Style.Triggers>
+
+                        </Style>
+
+                    </Button.Style>
+
+                </Button>
+
+
+                <!-- SYSTEM NAME -->
+
+                <TextBlock Grid.Column="1"
+                           Text="IRON DOME INTERCEPTOR SIMULATION"
                            VerticalAlignment="Center"
                            Foreground="#64748B"
                            FontSize="10"/>
 
-                <TextBlock Grid.Column="1"
+
+                <!-- COMMAND -->
+
+                <TextBlock Grid.Column="2"
                            Text="COMMAND ●"
                            VerticalAlignment="Center"
                            Foreground="#38BDF8"
                            FontSize="10"
                            Margin="0,0,20,0"/>
 
-                <TextBlock Grid.Column="2"
+
+                <!-- INTERCEPTOR -->
+
+                <TextBlock Grid.Column="3"
                            Text="INTERCEPTOR ●"
                            VerticalAlignment="Center"
                            Foreground="#F59E0B"

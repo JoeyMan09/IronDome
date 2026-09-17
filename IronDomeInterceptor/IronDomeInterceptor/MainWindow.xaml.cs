@@ -19,7 +19,7 @@ namespace IronDomeInterceptor
         private List<Interceptor> interceptors;
 
         private DispatcherTimer simulationTimer;
-
+        private bool boom;
         private const double dt = 0.05;
 
         private List<Point> targetTrail = new List<Point>();
@@ -211,19 +211,34 @@ namespace IronDomeInterceptor
         // =========================================================
         // EXPLOSION
         // =========================================================
+        private void PlayBoomSound()
+        {
+            if (!boom)
+                return;
 
+            string path =
+                @"C:\Users\idank\source\repos\IronDome\IronDomeSystem\IronDomeInterceptor\IronDomeInterceptor\אוריאלחדש.wav";
+
+            if (!System.IO.File.Exists(path))
+                return;
+
+            ExplosionAudio.Source = new Uri(path, UriKind.Absolute);
+            ExplosionAudio.Position = TimeSpan.Zero;
+            ExplosionAudio.Volume = 1.0;
+            ExplosionAudio.Play();
+        }
         private void ShowExplosion(
             double worldX,
             double worldY)
         {
+            PlayBoomSound();
             Point point =
                 WorldToCanvas(
                     worldX,
                     worldY
                 );
 
-
-            Ellipse outerExplosion =
+        Ellipse outerExplosion =
                 new Ellipse
                 {
                     Width = 20,
@@ -670,31 +685,27 @@ namespace IronDomeInterceptor
                         1,
                         command.EntityType,command.isFriendly
                     );
+                flyingEntities.Add(target);
+
+
+                // רק אם המטרה אויבת - משגרים מיירט
                 if (!target.getIsFriendly())
                 {
                     Interceptor interceptor =
-                    new Interceptor(
-                        0,
-                        0,
-                        $"Interceptor-" +
-                        $"{interceptors.Count + 1}",
-                        600,
-                        0,
-                        1,
-                        1000,
-                        EntityType.Entitytype.interceptor
-                    );interceptor.EngageTarget(
-                    target
-                );
+                        new Interceptor(
+                            0,
+                            0,
+                            $"Interceptor-{interceptors.Count + 1}",
+                            600,
+                            0,
+                            1,
+                            1000,
+                            EntityType.Entitytype.interceptor
+                        );
 
+                    interceptor.EngageTarget(target);
 
-                flyingEntities.Add(
-                    target
-                );
-
-                interceptors.Add(
-                    interceptor
-                );
+                    interceptors.Add(interceptor);
                 }
                 
 
@@ -1049,6 +1060,14 @@ namespace IronDomeInterceptor
             DrawSimulation();
 
             txtState.Text = "ABORTED";
+        }
+
+        private void btnBoom_Click(object sender, RoutedEventArgs e)
+        {
+            if (boom)
+                boom = false;
+            else
+                boom = true;
         }
     }
 }
