@@ -7,7 +7,7 @@ using System.Diagnostics;
 using System.Windows.Controls;
 using System.Net.Sockets;
 using System.Net;
-
+using System.Windows;
 
 namespace IronDomeRader
 {
@@ -92,124 +92,298 @@ namespace IronDomeRader
         public void SpawnFlyingEntity(Random rand)
         {
             int type = rand.Next(0, 4);
-            //int type = 3;
-            double angle = rand.NextDouble() * 2 * Math.PI;
-            double radius = WorldSize / 2;
 
-            double x = radius * Math.Cos(angle);
-            double y = radius * Math.Sin(angle);
+            // -------------------------------------------------
+            // Spawn point
+            // -------------------------------------------------
+
+            double angle =
+                rand.NextDouble() * 2 * Math.PI;
+
+            double radius =
+                WorldSize / 2;
+
+            double x =
+                radius * Math.Cos(angle);
+
+            double y =
+                radius * Math.Sin(angle);
+
+
+            // -------------------------------------------------
+            // EVERY ENTITY GETS AN IMPACT LOCATION
+            // -------------------------------------------------
+
+            ImpactLocation.ImpactLocations location =
+                GenerateImpactLocation(rand);
+
+            Point impact =
+                GetImpactPoint(location);
+
+
+            // -------------------------------------------------
+            // Direction toward impact point
+            // -------------------------------------------------
+
+            double directionX =
+                impact.X - x;
+
+            double directionY =
+                impact.Y - y;
+
+
+            double length =
+                Math.Sqrt(
+                    directionX * directionX +
+                    directionY * directionY
+                );
+
+
+            if (length > 0)
+            {
+                directionX /= length;
+                directionY /= length;
+            }
+
+
+            // =================================================
+            // BALLISTIC MISSILE
+            // =================================================
 
             if (type == 0)
             {
-                double directionX = -x;
-                double directionY = -y;
-                double length = Math.Sqrt(directionX * directionX + directionY * directionY);
-                if (length > 0)
-                {
-                    directionX /= length;
-                    directionY /= length;
-                }
-                double speed = rand.Next(150, 350);
-                double vx = speed * directionX;
-                double vy = speed * directionY;
-                DetectFlyingEntity(new BallisticMissile(
-                    x, y,
-                    "Ballistic" + flyingEntitiesDetected.Count,
-                    vx,
-                    vy,
-                    rand.Next(100, 300),
-                    rand.Next(100, 500),
-                    rand.Next(0, 360),
-                    ThreatLevel.threatLevel.Ballistic_Missile,
-                    rand.Next(10, 30),
-                    20000
-                ));
+                double speed =
+                    rand.Next(150, 350);
+
+                double vx =
+                    speed * directionX;
+
+                double vy =
+                    speed * directionY;
+
+
+                BallisticMissile missile =
+                    new BallisticMissile(
+                        x,
+                        y,
+                        "Ballistic" + flyingEntitiesDetected.Count,
+                        vx,
+                        vy,
+                        rand.Next(100, 300),
+                        rand.Next(100, 500),
+                        rand.Next(0, 360),
+                        ThreatLevel.threatLevel.Ballistic_Missile,
+                        rand.Next(10, 30),
+                        20000
+                    );
+
+
+                missile.SetImpactPoint(
+                    impact.X,
+                    impact.Y
+                );
+
+                missile.SetImpactLocation(
+                    location
+                );
+
+
+                DetectFlyingEntity(
+                    missile
+                );
             }
+
+
+            // =================================================
+            // SUPERSONIC MISSILE
+            // =================================================
+
             else if (type == 1)
             {
-                double directionX = -x;
-                double directionY = -y;
-                double length = Math.Sqrt(directionX * directionX + directionY * directionY);
-                if (length > 0)
-                {
-                    directionX /= length;
-                    directionY /= length;
-                }
-                double speed = rand.Next(350, 700);
-                double vx = speed * directionX;
-                double vy = speed * directionY;
-                DetectFlyingEntity(
-    new SupersonicMissile(
-        x,
-        y,
-        "Supersonic" + flyingEntitiesDetected.Count,
-        vx,
-        vy,
-        rand.Next(100, 300),
-        rand.Next(100, 500),
-        rand.Next(0, 360),
-        ThreatLevel.threatLevel.Supersonic_Missile,
-        rand.Next(10, 30),
-        30000,   // maxAltitude
-        20000,   // supersonicAltitude
-        50000    // maxRange
-    )
-);
-            }
-            else if(type==2)
-            {
-                
-                double directionX = -x;
-                double directionY = -y;
-                double length = Math.Sqrt(directionX*directionX+directionY*directionY);
-                if (length > 0)
-                {
-                    directionX /= length;
-                    directionY /= length;
-                }
-                double speed = rand.Next(50, 150);
-                double vx = speed * directionX;
-                double vy = speed * directionY;
+                double speed =
+                    rand.Next(350, 700);
 
-                DetectFlyingEntity(new Drone(
-                    x, y,
-                    "Drone" + flyingEntitiesDetected.Count,
-                    vx,
-                    vy,
-                    rand.Next(5, 10),
-                    10000,
-                    10
-                ));
+                double vx =
+                    speed * directionX;
+
+                double vy =
+                    speed * directionY;
+
+
+                SupersonicMissile missile =
+                    new SupersonicMissile(
+                        x,
+                        y,
+                        "Supersonic" + flyingEntitiesDetected.Count,
+                        vx,
+                        vy,
+                        rand.Next(100, 300),
+                        rand.Next(100, 500),
+                        rand.Next(0, 360),
+                        ThreatLevel.threatLevel.Supersonic_Missile,
+                        rand.Next(10, 30),
+                        30000,
+                        20000,
+                        50000
+                    );
+
+
+                missile.SetImpactPoint(
+                    impact.X,
+                    impact.Y
+                );
+
+                missile.SetImpactLocation(
+                    location
+                );
+
+
+                DetectFlyingEntity(
+                    missile
+                );
             }
+
+
+            // =================================================
+            // DRONE
+            // =================================================
+
+            else if (type == 2)
+            {
+                double speed =
+                    rand.Next(50, 150);
+
+                double vx =
+                    speed * directionX;
+
+                double vy =
+                    speed * directionY;
+
+
+                Drone drone =
+                    new Drone(
+                        x,
+                        y,
+                        "Drone" + flyingEntitiesDetected.Count,
+                        vx,
+                        vy,
+                        rand.Next(5, 10),
+                        10000,
+                        10
+                    );
+
+
+                drone.SetImpactPoint(
+                    impact.X,
+                    impact.Y
+                );
+
+                drone.SetImpactLocation(
+                    location
+                );
+
+
+                DetectFlyingEntity(
+                    drone
+                );
+            }
+
+
+            // =================================================
+            // AIRCRAFT
+            // =================================================
+
             else
             {
-                double directionX = -x;
-                double directionY = -y;
-                double length = Math.Sqrt(directionX * directionX + directionY * directionY);
-                if (length > 0)
-                {
-                    directionX /= length;
-                    directionY /= length;
-                }
-                double speed = rand.Next(50, 150);
-                double vx = speed * directionX;
-                double vy = speed * directionY;
-                double fuel = rand.Next(1000, 2000);
-                int friendly = rand.Next(0, 2);
-                bool isfriendly;
-                if (friendly == 0)
-                {
-                 isfriendly = false;   
-                }
-                else
-                    isfriendly = true;
-                DetectFlyingEntity(new AirCraft(x, y, "Aircarft " + flyingEntitiesDetected.Count + 1, vx, vy, 1, fuel, rand.Next(1000, 3000), isfriendly, EntityType.Entitytype.aircraft));
+                double speed =
+                    rand.Next(50, 150);
+
+                double vx =
+                    speed * directionX;
+
+                double vy =
+                    speed * directionY;
+
+
+                double fuel =
+                    rand.Next(1000, 2000);
+
+
+                bool isFriendly =
+                    rand.Next(0, 2) == 1;
+
+
+                AirCraft aircraft =
+                    new AirCraft(
+                        x,
+                        y,
+                        "Aircraft" + (flyingEntitiesDetected.Count + 1),
+                        vx,
+                        vy,
+                        1,
+                        fuel,
+                        rand.Next(1000, 3000),
+                        isFriendly,
+                        EntityType.Entitytype.aircraft
+                    );
+
+
+                aircraft.SetImpactPoint(
+                    impact.X,
+                    impact.Y
+                );
+
+                aircraft.SetImpactLocation(
+                    location
+                );
+
+
+                DetectFlyingEntity(
+                    aircraft
+                );
             }
         }
 
         public List<FlyingEntity> GetFlyingEntities() => flyingEntitiesDetected;
 
+        private ImpactLocation.ImpactLocations GenerateImpactLocation(Random rand)
+        {
+            ImpactLocation.ImpactLocations[] locations =
+                Enum.GetValues<ImpactLocation.ImpactLocations>()
+                    .Where(x => x != ImpactLocation.ImpactLocations.Unknown)
+                    .ToArray();
 
+            return locations[rand.Next(locations.Length)];
+        }
+        private Point GetImpactPoint(ImpactLocation.ImpactLocations location)
+        {
+            switch (location)
+            {
+                case ImpactLocation.ImpactLocations.Haifa:
+                    return new Point(-1500, 7000);
+
+                case ImpactLocation.ImpactLocations.TelAviv:
+                    return new Point(-1200, 2500);
+
+                case ImpactLocation.ImpactLocations.Jerusalem:
+                    return new Point(1200, 1500);
+
+                case ImpactLocation.ImpactLocations.Ashdod:
+                    return new Point(-1000, 500);
+
+                case ImpactLocation.ImpactLocations.Ashkelon:
+                    return new Point(-900, -1000);
+
+                case ImpactLocation.ImpactLocations.BeerSheva:
+                    return new Point(0, -4000);
+
+                case ImpactLocation.ImpactLocations.Eilat:
+                    return new Point(500, -8500);
+
+                default:
+                    return new Point(0, 0);
+            }
+        }
         private void GetImpactedEntities(List<FlyingEntity> toRemove)
         {
             foreach (var entity in flyingEntitiesDetected)

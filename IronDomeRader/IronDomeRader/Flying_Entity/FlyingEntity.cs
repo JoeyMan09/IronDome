@@ -18,7 +18,9 @@ namespace IronDomeRader.Flying_Entity
         protected EntityType.Entitytype type;
         protected bool isFriendly;
         protected bool isDestroyed;
-
+        protected double impactX;
+        protected double impactY;
+        protected ImpactLocation.ImpactLocations impactLocation;
         public FlyingEntity(
             double x,
             double y,
@@ -48,7 +50,30 @@ namespace IronDomeRader.Flying_Entity
             isDestroyed = false;
             this.isFriendly = isFriendly;
         }
+        public void SetImpactPoint(double impactX, double impactY)
+        {
+            this.impactX = impactX;
+            this.impactY = impactY;
+        }
+        public void SetImpactLocation(
+    ImpactLocation.ImpactLocations location)
+        {
+            impactLocation = location;
+        }
 
+        public ImpactLocation.ImpactLocations GetImpactLocation()
+        {
+            return impactLocation;
+        }
+        public double GetImpactX()
+        {
+            return impactX;
+        }
+
+        public double GetImpactY()
+        {
+            return impactY;
+        }
         public string getName()
         {
             return name;
@@ -122,16 +147,18 @@ namespace IronDomeRader.Flying_Entity
 
         public double TimeToImpact()
         {
-            double distance =
-                Math.Sqrt(
-                    x * x +
-                    y * y
-                );
+            double dx = impactX - x;
+            double dy = impactY - y;
 
-            if (getSpeed() == 0)
+            double distance =
+                Math.Sqrt(dx * dx + dy * dy);
+
+            double speed = getSpeed();
+
+            if (speed == 0)
                 return double.PositiveInfinity;
 
-            return distance / getSpeed();
+            return distance / speed;
         }
         public bool IsFriendly()
         {

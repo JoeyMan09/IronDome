@@ -514,17 +514,55 @@
 
                         </Grid>
 
-                        <ListBox x:Name="lstTargets"
-                                 Grid.Row="1"
-                                 SelectionChanged="lstTargets_SelectionChanged"
-                                 Background="#080D13"
-                                 Foreground="#E2E8F0"
-                                 BorderBrush="#263746"
-                                 BorderThickness="1"
-                                 FontFamily="Consolas"
-                                 FontSize="12"
-                                 Padding="4"/>
+                        <DataGrid x:Name="lstTargets"
+          Grid.Row="1"
+          SelectionChanged="lstTargets_SelectionChanged"
+          AutoGenerateColumns="False"
+          IsReadOnly="True"
+          CanUserAddRows="False"
+          CanUserDeleteRows="False"
+          HeadersVisibility="Column"
+          GridLinesVisibility="Horizontal"
+          Background="#080D13"
+          Foreground="#E2E8F0"
+          BorderBrush="#263746"
+          HorizontalGridLinesBrush="#1E293B"
+          RowBackground="#080D13"
+          AlternatingRowBackground="#0D141D"
+          FontFamily="Consolas"
+          FontSize="11">
 
+                            <DataGrid.Columns>
+
+                                <DataGridTextColumn Header="ID"
+                            Binding="{Binding Id}"
+                            Width="35"/>
+
+                                <DataGridTextColumn Header="TYPE"
+                            Binding="{Binding EntityType}"
+                            Width="80"/>
+
+                                <DataGridTextColumn Header="NAME"
+                            Binding="{Binding Name}"
+                            Width="*"/>
+
+                                <DataGridTextColumn Header="X"
+                            Binding="{Binding X, StringFormat=F0}"
+                            Width="65"/>
+
+                                <DataGridTextColumn Header="Y"
+                            Binding="{Binding Y, StringFormat=F0}"
+                            Width="65"/>
+
+                                <DataGridTextColumn Header="IMPACT"
+                            Binding="{Binding ImpactLocation}"
+                            Width="90"/>
+                                <DataGridCheckBoxColumn Header="FRIEND"
+                        Binding="{Binding isFriendly}"
+                        Width="60"/>
+                            </DataGrid.Columns>
+
+                        </DataGrid>
                     </Grid>
 
                 </Border>

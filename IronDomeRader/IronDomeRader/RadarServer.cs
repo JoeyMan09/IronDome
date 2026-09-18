@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using static IronDomeRader.ImpactLocation;
 
 namespace IronDomeRader
 {
@@ -24,7 +25,9 @@ namespace IronDomeRader
 
         public EntityType.Entitytype EntityType { get; set; }
         public bool isFriendly {  get; set; }
-
+        public double impactX { get; set; }
+        public double impactY { get; set; }
+        public ImpactLocation.ImpactLocations impactLocations { get; set; }
         public TargetData(
             int id,
             string name,
@@ -33,7 +36,7 @@ namespace IronDomeRader
             double vx,
             double vy,
             ThreatLevel.threatLevel threatLevel,
-            EntityType.Entitytype entityType,bool friend)
+            EntityType.Entitytype entityType,bool friend,double impactx, double impacty,ImpactLocation.ImpactLocations impactLocation)
         {
             Id = id;
 
@@ -49,6 +52,9 @@ namespace IronDomeRader
 
             EntityType = entityType;
             isFriendly= friend;
+            impactX = impactx;
+            impactY = impacty;
+            impactLocations = impactLocation;
         }
     }
 

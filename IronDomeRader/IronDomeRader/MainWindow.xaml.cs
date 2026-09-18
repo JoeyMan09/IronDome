@@ -32,6 +32,7 @@ namespace IronDomeRader
         private const double WorldSize = 50000.0;
         private RadarServer radarServer;
         private FlyingEntity selectedEntity;
+        private int tableUpdateCounter = 0;
         public MainWindow()
         {
             InitializeComponent();
@@ -39,6 +40,18 @@ namespace IronDomeRader
             radarSystem = new RadarSystem();
             rand = new Random();
             radarServer = new RadarServer();
+        }
+        private void EntityTable_SelectionChanged(
+    object sender,
+    SelectionChangedEventArgs e)
+        {
+            if (EntityTable.SelectedItem is EntityTableRow row)
+            {
+                selectedEntity = row.Entity;
+
+                Title =
+                    $"Selected: {selectedEntity.getName()}";
+            }
         }
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
@@ -150,6 +163,13 @@ namespace IronDomeRader
 
             DrawSweep();
             DrawRadar();
+            tableUpdateCounter++;
+
+            if (tableUpdateCounter >= 10)
+            {
+                UpdateEntityTable();
+                tableUpdateCounter = 0;
+            }
         }
 
         private void DrawSweep()
@@ -284,8 +304,9 @@ namespace IronDomeRader
                 selectedEntity.getVy(),
                 selectedEntity.getThreatLvl(),
                 selectedEntity.GetEntityType(),
-                selectedEntity.getIsFriendly()
-                
+                selectedEntity.getIsFriendly(),
+                selectedEntity.GetImpactX(),
+                selectedEntity.GetImpactY(), selectedEntity.GetImpactLocation()
             );
 
             await radarServer.SendTargetAsync(target);
@@ -308,7 +329,7 @@ namespace IronDomeRader
                     entity.getVx(),
                     entity.getVy(),
                     entity.getThreatLvl(),
-                    entity.GetEntityType(), entity.getIsFriendly()
+                    entity.GetEntityType(), entity.getIsFriendly(), entity.GetImpactX(),entity.GetImpactY(), entity.GetImpactLocation()
                 );
 
                 await radarServer.SendTargetAsync(target);
@@ -325,5 +346,69 @@ namespace IronDomeRader
             txtStats.Text = "Server Connected";
             txtStats.Foreground = Brushes.Green;
         }
+        private void UpdateEntityTable()
+        {
+            if (EntityTable == null)
+                return;
+
+            int? selectedId = selectedEntity?.getId();
+
+            EntityTable.Items.Clear();
+
+            foreach (FlyingEntity entity in radarSystem.GetFlyingEntities())
+            {
+                string impact = "-";
+
+                if (entity is BallisticMissile ||
+                    entity is SupersonicMissile)
+                {
+                    impact = entity.GetImpactLocation().ToString();
+                }
+
+                EntityTable.Items.Add(
+                    new EntityTableRow
+                    {
+                        Id = entity.getId(),
+
+                        Name = entity.getName(),
+
+                        Type = entity.GetEntityType().ToString(),
+
+                        Speed = $"{entity.getSpeed():F0}",
+
+                        Impact = impact,
+
+                        Entity = entity
+                    }
+                );
+            }
+
+            // Keep selection
+            if (selectedId != null)
+            {
+                foreach (EntityTableRow row in EntityTable.Items)
+                {
+                    if (row.Id == selectedId)
+                    {
+                        EntityTable.SelectedItem = row;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+     class EntityTableRow
+    {
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+
+        public string Type { get; set; }
+
+        public string Speed { get; set; }
+
+        public string Impact { get; set; }
+
+        public FlyingEntity Entity { get; set; }
     }
 }

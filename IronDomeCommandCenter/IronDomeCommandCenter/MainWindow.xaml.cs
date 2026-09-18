@@ -21,6 +21,15 @@ namespace IronDomeCommandCenter
         private Dictionary<int, TargetData> targets;
         private TargetData? selectedTarget;
         private InterceptorServer interceptorServer;
+        // =============================================
+        // SIMULATED ISRAEL AREA
+        // =============================================
+
+        private const double IsraelMinX = -5000;
+        private const double IsraelMaxX = 5000;
+
+        private const double IsraelMinY = -12000;
+        private const double IsraelMaxY = 12000;
         public MainWindow()
         {
             InitializeComponent();
@@ -88,6 +97,44 @@ namespace IronDomeCommandCenter
                     }
                 }
             }
+        }// =============================================
+         // WORLD -> MAP
+         // =============================================
+
+        private Point WorldToCanvas(double x, double y)
+        {
+            double width = CommandCanvas.ActualWidth;
+            double height = CommandCanvas.ActualHeight;
+
+            if (width <= 0 || height <= 0)
+                return new Point(0, 0);
+
+            // World coordinates used by the radar
+            const double worldMinX = -25000;
+            const double worldMaxX = 25000;
+
+            const double worldMinY = -25000;
+            const double worldMaxY = 25000;
+
+            double normalizedX =
+                (x - worldMinX) /
+                (worldMaxX - worldMinX);
+
+            double normalizedY =
+                (y - worldMinY) /
+                (worldMaxY - worldMinY);
+
+            double canvasX =
+                normalizedX * width;
+
+            // WPF Y goes downward
+            double canvasY =
+                height - normalizedY * height;
+
+            return new Point(
+                canvasX,
+                canvasY
+            );
         }
         private void lstTargets_SelectionChanged( object sender,SelectionChangedEventArgs e)
         {
@@ -119,8 +166,8 @@ namespace IronDomeCommandCenter
 
             txtSelectedTarget.Text =
                 $"TARGET ID:  {target.Id}\n" +
-                $"FRIENDLY:   {friendlyText}\n" +
-                $"TYPE:       {target.Name}\n" +
+                $"Impact Location:{ target.impactLocations}\n" +
+                $"TYPE:       {target.Name}" +
                 $"ENTITY:     {target.EntityType}\n" +
                 $"POSITION:   ({target.X:F0}, {target.Y:F0})\n" +
                 $"VELOCITY:   ({target.Vx:F0}, {target.Vy:F0})\n" +
@@ -158,9 +205,137 @@ namespace IronDomeCommandCenter
 
         private void DrawCommandMap()
         {
-            
+            CommandCanvas.Children.Clear();
+
+            foreach (TargetData target in targets.Values)
+            {
+                if (target.isFriendly)
+                    continue;
+
+                if (target.EntityType != Entitytype.EntityType.ballistic &&
+                    target.EntityType != Entitytype.EntityType.supersonic)
+                {
+                    continue;
+                }
+
+                DrawImpactX(
+                    target.impactLocations,
+                    target.Id
+                );
+            }
         }
 
+        private Point CityToMap(
+    ImpactLocation.ImpactLocations city)
+        {
+            double imageWidth = IsraelMap.ActualWidth;
+            double imageHeight = IsraelMap.ActualHeight;
+
+            double canvasWidth = CommandCanvas.ActualWidth;
+            double canvasHeight = CommandCanvas.ActualHeight;
+
+            double imageLeft =
+                (canvasWidth - imageWidth) / 2;
+
+            double imageTop =
+                (canvasHeight - imageHeight) / 2;
+
+            double xPercent;
+            double yPercent;
+
+            switch (city)
+            {
+                case ImpactLocation.ImpactLocations.Haifa:
+                    xPercent = 0.38;
+                    yPercent = 0.26;
+                    break;
+
+                case ImpactLocation.ImpactLocations.TelAviv:
+                    xPercent = 0.30;
+                    yPercent = 0.39;
+                    break;
+
+                case ImpactLocation.ImpactLocations.Jerusalem:
+                    xPercent = 0.42;
+                    yPercent = 0.45;
+                    break;
+
+                case ImpactLocation.ImpactLocations.Ashdod:
+                    xPercent = 0.28;
+                    yPercent = 0.48;
+                    break;
+
+                case ImpactLocation.ImpactLocations.Ashkelon:
+                    xPercent = 0.27;
+                    yPercent = 0.52;
+                    break;
+
+                case ImpactLocation.ImpactLocations.BeerSheva:
+                    xPercent = 0.36;
+                    yPercent = 0.60;
+                    break;
+
+                case ImpactLocation.ImpactLocations.Eilat:
+                    xPercent = 0.35;
+                    yPercent = 0.91;
+                    break;
+
+                default:
+                    xPercent = 0.5;
+                    yPercent = 0.5;
+                    break;
+            }
+
+            return new Point(
+                imageLeft + imageWidth * xPercent,
+                imageTop + imageHeight * yPercent
+            );
+        }
+        private void DrawImpactX(
+     ImpactLocation.ImpactLocations city,
+     int targetId)
+        {
+            Point p = CityToMap(city);
+
+            const double size = 8;
+
+            Line a = new Line
+            {
+                X1 = p.X - size,
+                Y1 = p.Y - size,
+                X2 = p.X + size,
+                Y2 = p.Y + size,
+                Stroke = Brushes.Red,
+                StrokeThickness = 3
+            };
+
+            Line b = new Line
+            {
+                X1 = p.X - size,
+                Y1 = p.Y + size,
+                X2 = p.X + size,
+                Y2 = p.Y - size,
+                Stroke = Brushes.Red,
+                StrokeThickness = 3
+            };
+
+            CommandCanvas.Children.Add(a);
+            CommandCanvas.Children.Add(b);
+
+            TextBlock label = new TextBlock
+            {
+                Text = $"{city} #{targetId}",
+                Foreground = Brushes.Red,
+                FontWeight = FontWeights.Bold,
+                FontFamily = new FontFamily("Consolas"),
+                FontSize = 9
+            };
+
+            CommandCanvas.Children.Add(label);
+
+            Canvas.SetLeft(label, p.X + 11);
+            Canvas.SetTop(label, p.Y - 6);
+        }
         private async void btnIntercept_Click(object sender, RoutedEventArgs e)
         {
             if (selectedTarget == null)

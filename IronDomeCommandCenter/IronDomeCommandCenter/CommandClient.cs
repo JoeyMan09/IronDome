@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
+using static IronDomeCommandCenter.ImpactLocation;
 namespace IronDomeCommandCenter
 {
     struct TargetData
@@ -21,7 +22,10 @@ namespace IronDomeCommandCenter
         
         public Entitytype.EntityType EntityType { get; set; }
         public bool isFriendly { get; set; }
-        public TargetData(int id,string name, double x, double y, double vx, double vy,Entitytype.EntityType entitytype,bool isFriendly)
+        public double impactX { get; set; }
+        public double impactY { get; set; }
+        public ImpactLocation.ImpactLocations impactLocations { get; set; }
+        public TargetData(int id,string name, double x, double y, double vx, double vy,Entitytype.EntityType entitytype,bool isFriendly, double impactx, double impacty, ImpactLocation.ImpactLocations impact)
         {
             Id = id;
             Name = name;
@@ -31,15 +35,22 @@ namespace IronDomeCommandCenter
             Vy = vy;
             EntityType = entitytype;
             this.isFriendly=isFriendly;
+            impactX = impactx;
+            impactY = impacty;
+            impactLocations = impact;
         }
         public double GetSpeed()
         {
-            if(X < 0 || Y < 0)
+            if (X < 0 || Y < 0)
             {
-                return -Math.Sqrt(X * X + Y * Y);
+                return -Math.Sqrt(
+       Vx * Vx +
+       Vy * Vy);
             }
             else
-                return Math.Sqrt(X * X + Y * Y);
+                return Math.Sqrt(
+                Vx * Vx +
+       Vy * Vy);
         }
         public override string ToString()
         {
