@@ -61,51 +61,93 @@ namespace IronDomeRader
 
     internal class RadarServer
     {
-        private TcpListener listener;
+        private readonly TcpListener listener;
+        private NetworkStream? stream;
+        private StreamReader? reader;
 
-        private const int port = 6767;
-        private const string address = "127.0.0.1";
+        private readonly SemaphoreSlim sendLock = new(1, 1);
 
-        public NetworkStream stream;
-
+        public event Action<int>? TargetDestroyed;
 
         public RadarServer()
         {
             listener = new TcpListener(
-                IPAddress.Parse(address),
-                port
+                IPAddress.Loopback, 6767
             );
         }
-
 
         public async Task RaderServerListenAsync()
         {
             listener.Start();
 
-            TcpClient commandClient =
-                await listener.AcceptTcpClientAsync();
+            TcpClient client = await listener.AcceptTcpClientAsync();
+            stream = client.GetStream();
 
-            stream =
-                commandClient.GetStream();
+            reader = new StreamReader(
+                stream, Encoding.UTF8, leaveOpen: true
+            );
+
+            _ = ListenForDestroyedTargetsAsync();
         }
 
-
-        public async Task SendTargetAsync(
-            TargetData target)
+        public async Task SendTargetAsync(TargetData target)
         {
-            string json =
-                JsonSerializer.Serialize(target);
-
-            byte[] data =
-                Encoding.UTF8.GetBytes(
-                    json + "\n"
+            if (stream == null)
+                throw new InvalidOperationException(
+                    "Command Center not connected."
                 );
 
-            await stream.WriteAsync(
-                data,
-                0,
-                data.Length
+            byte[] data = Encoding.UTF8.GetBytes(
+                JsonSerializer.Serialize(target) + "\n"
             );
+
+            await sendLock.WaitAsync();
+
+            try
+            {
+                await stream.WriteAsync(data, 0, data.Length);
+            }
+            finally
+            {
+                sendLock.Release();
+            }
         }
+
+        private async Task ListenForDestroyedTargetsAsync()
+        {
+            if (reader == null)
+                return;
+
+            try
+            {
+                while (true)
+                {
+                    string? json = await reader.ReadLineAsync();
+
+                    if (json == null)
+                        break;
+
+                    RadarMessage? message =
+                        JsonSerializer.Deserialize<RadarMessage>(json);
+
+                    if (message?.MessageType == "TargetDestroyed")
+                    {
+                        TargetDestroyed?.Invoke(message.TargetId);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"Radar error: {ex.Message}"
+                );
+            }
+        }
+    }
+
+    internal class RadarMessage
+    {
+        public string MessageType { get; set; } = "";
+        public int TargetId { get; set; }
     }
 }

@@ -1,16 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design;
-using System.Linq;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IronDomeCommandCenter
 {
-    struct InterceptorData
+    internal struct InterceptorData
     {
         public int CommandId { get; set; }
         public int TargetId { get; set; }
@@ -40,41 +39,111 @@ namespace IronDomeCommandCenter
             InterceptorVy = vy;
         }
     }
+
     internal class InterceptorServer
     {
-        private TcpListener listener;
+        private readonly TcpListener listener;
 
-        private const int port = 6768;
-        private const string address = "127.0.0.1";
+        private NetworkStream? stream;
+        private StreamReader? reader;
 
-        public NetworkStream stream;
+        private readonly SemaphoreSlim sendLock = new(1, 1);
+
+        public event Func<InterceptResult, Task>? InterceptCompleted;
 
         public InterceptorServer()
         {
             listener = new TcpListener(
-              IPAddress.Parse(address),
-              port
-          );
+                IPAddress.Loopback,
+                6768
+            );
         }
+
         public async Task CommandServerListenAsync()
         {
             listener.Start();
 
-            TcpClient commandClient =
+            TcpClient interceptorClient =
                 await listener.AcceptTcpClientAsync();
 
-            stream = commandClient.GetStream();
+            stream = interceptorClient.GetStream();
+
+            reader = new StreamReader(
+                stream,
+                Encoding.UTF8,
+                leaveOpen: true
+            );
+
+            _ = ListenForInterceptResultsAsync();
         }
 
-        public async Task SendInterceptCommandAsync(InterceptCommand command)
+        public async Task SendInterceptCommandAsync(
+            InterceptCommand command)
         {
+            if (stream == null)
+                throw new InvalidOperationException(
+                    "Interceptor is not connected."
+                );
+
             string json = JsonSerializer.Serialize(command);
 
-            byte[] data =
-                Encoding.UTF8.GetBytes(json + "\n");
+            byte[] data = Encoding.UTF8.GetBytes(
+                json + "\n"
+            );
 
-            await stream.WriteAsync(data, 0, data.Length);
+            await sendLock.WaitAsync();
+
+            try
+            {
+                await stream.WriteAsync(
+                    data,
+                    0,
+                    data.Length
+                );
+            }
+            finally
+            {
+                sendLock.Release();
+            }
         }
-        
+
+        private async Task ListenForInterceptResultsAsync()
+        {
+            if (reader == null)
+                return;
+
+            try
+            {
+                while (true)
+                {
+                    string? json = await reader.ReadLineAsync();
+
+                    if (json == null)
+                        break;
+
+                    InterceptResult? result =
+                        JsonSerializer.Deserialize<InterceptResult>(json);
+
+                    if (result == null)
+                        continue;
+
+                    if (InterceptCompleted == null)
+                        continue;
+
+                    foreach (
+                        Func<InterceptResult, Task> handler
+                        in InterceptCompleted.GetInvocationList())
+                    {
+                        await handler(result);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(
+                    $"Interceptor receive error: {ex.Message}"
+                );
+            }
+        }
     }
 }

@@ -40,6 +40,32 @@ namespace IronDomeRader
             radarSystem = new RadarSystem();
             rand = new Random();
             radarServer = new RadarServer();
+            radarServer.TargetDestroyed += targetId =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    RemoveDestroyedTarget(targetId);
+                });
+            };
+        }
+        private void RemoveDestroyedTarget(int targetId)
+        {
+            FlyingEntity? target = radarSystem.GetFlyingEntities()
+                .FirstOrDefault(entity => entity.getId() == targetId);
+
+            if (target == null)
+                return;
+
+            radarSystem.GetFlyingEntities().Remove(target);
+
+            if (selectedEntity?.getId() == targetId)
+            {
+                selectedEntity = null;
+                Title = "Iron Dome Radar";
+            }
+
+            DrawRadar();
+            UpdateEntityTable();
         }
         private void EntityTable_SelectionChanged(
     object sender,

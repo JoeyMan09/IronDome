@@ -18,7 +18,7 @@ namespace IronDomeRader
         private const int port = 6767;
         private const string ip="127.0.0.1";
         private const double WorldSize = 50000.0;
-
+        public const int MaxActiveTargets = 10;
         public RadarSystem()
         {
             flyingEntitiesDetected = new List<FlyingEntity>();

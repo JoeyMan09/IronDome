@@ -162,7 +162,7 @@
                 <ColumnDefinition Width="190"/>
 
                 <!-- Main right control panel -->
-                <ColumnDefinition Width="390"/>
+                <ColumnDefinition Width="540"/>
 
             </Grid.ColumnDefinitions>
 
@@ -515,53 +515,77 @@
                         </Grid>
 
                         <DataGrid x:Name="lstTargets"
-          Grid.Row="1"
-          SelectionChanged="lstTargets_SelectionChanged"
-          AutoGenerateColumns="False"
-          IsReadOnly="True"
-          CanUserAddRows="False"
-          CanUserDeleteRows="False"
-          HeadersVisibility="Column"
-          GridLinesVisibility="Horizontal"
-          Background="#080D13"
-          Foreground="#E2E8F0"
-          BorderBrush="#263746"
-          HorizontalGridLinesBrush="#1E293B"
-          RowBackground="#080D13"
-          AlternatingRowBackground="#0D141D"
-          FontFamily="Consolas"
-          FontSize="11">
+                                  Grid.Row="1"
+                                  SelectionChanged="lstTargets_SelectionChanged"
+                                  AutoGenerateColumns="False"
+                                  CanUserSortColumns="False"
+                                  IsReadOnly="True"
+                                  CanUserAddRows="False"
+                                  CanUserDeleteRows="False"
+                                  CanUserResizeColumns="True"
+                                  CanUserReorderColumns="False"
+                                  SelectionMode="Single"
+                                  SelectionUnit="FullRow"
+                                  HeadersVisibility="Column"
+                                  GridLinesVisibility="All"
+                                  HorizontalGridLinesBrush="#263746"
+                                  VerticalGridLinesBrush="#263746"
+                                  Background="#080D13"
+                                  Foreground="#E2E8F0"
+                                  BorderBrush="#334155"
+                                  BorderThickness="1"
+                                  RowBackground="#0A111B"
+                                  AlternatingRowBackground="#121E2C"
+                                  AlternationCount="2"
+                                  RowHeight="36"
+                                  ColumnHeaderHeight="42"
+                                  FontFamily="Consolas"
+                                  FontSize="12"
+                                  HorizontalScrollBarVisibility="Auto"
+                                  VerticalScrollBarVisibility="Auto"
+                                  ScrollViewer.CanContentScroll="True">
+
+                            <DataGrid.ColumnHeaderStyle>
+                                <Style TargetType="DataGridColumnHeader">
+                                    <Setter Property="Background" Value="#1D3044"/>
+                                    <Setter Property="Foreground" Value="#F1F5F9"/>
+                                    <Setter Property="FontWeight" Value="Bold"/>
+                                    <Setter Property="FontSize" Value="12"/>
+                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    <Setter Property="Padding" Value="8,0"/>
+                                    <Setter Property="BorderBrush" Value="#475569"/>
+                                    <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                                </Style>
+                            </DataGrid.ColumnHeaderStyle>
+
+                            <DataGrid.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="Padding" Value="8,4"/>
+                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                    <Setter Property="BorderBrush" Value="#263746"/>
+                                    <Setter Property="BorderThickness" Value="0,0,1,0"/>
+                                    <Setter Property="Foreground" Value="#E2E8F0"/>
+                                    <Style.Triggers>
+                                        <Trigger Property="IsSelected" Value="True">
+                                            <Setter Property="Background" Value="#164E63"/>
+                                            <Setter Property="Foreground" Value="White"/>
+                                            <Setter Property="BorderBrush" Value="#38BDF8"/>
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGrid.CellStyle>
 
                             <DataGrid.Columns>
-
-                                <DataGridTextColumn Header="ID"
-                            Binding="{Binding Id}"
-                            Width="35"/>
-
-                                <DataGridTextColumn Header="TYPE"
-                            Binding="{Binding EntityType}"
-                            Width="80"/>
-
-                                <DataGridTextColumn Header="NAME"
-                            Binding="{Binding Name}"
-                            Width="*"/>
-
-                                <DataGridTextColumn Header="X"
-                            Binding="{Binding X, StringFormat=F0}"
-                            Width="65"/>
-
-                                <DataGridTextColumn Header="Y"
-                            Binding="{Binding Y, StringFormat=F0}"
-                            Width="65"/>
-
-                                <DataGridTextColumn Header="IMPACT"
-                            Binding="{Binding ImpactLocation}"
-                            Width="90"/>
-                                <DataGridCheckBoxColumn Header="FRIEND"
-                        Binding="{Binding isFriendly}"
-                        Width="60"/>
+                                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="48"/>
+                                <DataGridTextColumn Header="ETA" Binding="{Binding EtaDisplay}" Width="78"/>
+                                <DataGridTextColumn Header="TYPE" Binding="{Binding EntityType}" Width="110"/>
+                                <DataGridTextColumn Header="NAME" Binding="{Binding Name}" Width="140"/>
+                                <DataGridTextColumn Header="X" Binding="{Binding X, StringFormat=F0}" Width="80"/>
+                                <DataGridTextColumn Header="Y" Binding="{Binding Y, StringFormat=F0}" Width="80"/>
+                                <DataGridTextColumn Header="IMPACT" Binding="{Binding ImpactLocation}" Width="115"/>
+                                <DataGridCheckBoxColumn Header="FRIEND" Binding="{Binding isFriendly}" Width="80"/>
                             </DataGrid.Columns>
-
                         </DataGrid>
                     </Grid>
 

@@ -14,15 +14,22 @@
 
         public double TargetVy { get; set; }
 
+        public double ImpactX { get; set; }
+
+        public double ImpactY { get; set; }
+
+        public bool HasImpactPoint { get; set; }
+
         public EntityType.Entitytype EntityType { get; set; }
+
         public bool isFriendly { get; set; }
 
-        // חשוב ל-JSON
+        // Required for JSON deserialization
         public InterceptCommand()
         {
         }
 
-
+        // Existing constructor, preserved for compatibility
         public InterceptCommand(
             int commandId,
             int targetId,
@@ -30,10 +37,10 @@
             double targetY,
             double targetVx,
             double targetVy,
-            EntityType.Entitytype entityType,bool isFriendly)
+            EntityType.Entitytype entityType,
+            bool isFriendly)
         {
             CommandId = commandId;
-
             TargetId = targetId;
 
             TargetX = targetX;
@@ -44,6 +51,35 @@
 
             EntityType = entityType;
             this.isFriendly = isFriendly;
+
+            HasImpactPoint = false;
+        }
+
+        // Constructor with impact coordinates
+        public InterceptCommand(
+            int commandId,
+            int targetId,
+            double targetX,
+            double targetY,
+            double targetVx,
+            double targetVy,
+            EntityType.Entitytype entityType,
+            bool isFriendly,
+            double impactX,
+            double impactY)
+            : this(
+                commandId,
+                targetId,
+                targetX,
+                targetY,
+                targetVx,
+                targetVy,
+                entityType,
+                isFriendly)
+        {
+            ImpactX = impactX;
+            ImpactY = impactY;
+            HasImpactPoint = true;
         }
     }
 }

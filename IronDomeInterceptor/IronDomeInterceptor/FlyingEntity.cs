@@ -23,6 +23,13 @@ namespace IronDomeInterceptor
         protected bool isDestroyed;
         protected bool isFriendly;
 
+        // Impact location
+        private double impactX;
+        private double impactY;
+        private bool hasImpactPoint;
+
+        private const double ImpactRadius = 100.0;
+
         public FlyingEntity(
             double x,
             double y,
@@ -33,7 +40,7 @@ namespace IronDomeInterceptor
             EntityType.Entitytype type,
             bool isFriendly)
         {
-            this.id = ClassId++;
+            id = ClassId++;
 
             this.x = x;
             this.y = y;
@@ -44,123 +51,143 @@ namespace IronDomeInterceptor
             this.Vy = Vy;
 
             this.size = size;
-
             this.type = type;
 
-            isDestroyed = false;
             this.isFriendly = isFriendly;
-        }
 
+            isDestroyed = false;
+            hasImpactPoint = false;
+        }
 
         public FlyingEntity(FlyingEntity entity)
         {
-            this.id = ClassId++;
+            id = ClassId++;
 
-            this.x = entity.x;
-            this.y = entity.y;
+            x = entity.x;
+            y = entity.y;
 
-            this.name = entity.name;
+            name = entity.name;
 
-            this.Vx = entity.Vx;
-            this.Vy = entity.Vy;
+            Vx = entity.Vx;
+            Vy = entity.Vy;
 
-            this.size = entity.size;
+            size = entity.size;
+            type = entity.type;
 
-            this.type = entity.type;
+            isFriendly = entity.isFriendly;
+            isDestroyed = entity.isDestroyed;
 
-            isDestroyed = false;
+            impactX = entity.impactX;
+            impactY = entity.impactY;
+            hasImpactPoint = entity.hasImpactPoint;
         }
 
-
-        public string getName()
+        public void SetImpactPoint(double x, double y)
         {
-            return name;
+            impactX = x;
+            impactY = y;
+            hasImpactPoint = true;
         }
 
+        public string getName() => name;
 
-        public double getX()
+        public double getX() => x;
+
+        public double getY() => y;
+
+        public double getVx() => Vx;
+
+        public double getVy() => Vy;
+
+        public int getId() => id;
+
+        public bool getIsFriendly() => isFriendly;
+
+        public EntityType.Entitytype GetEntityType() => type;
+
+        public double getSpeed()
         {
-            return x;
+            return Math.Sqrt(Vx * Vx + Vy * Vy);
         }
-
-
-        public double getY()
-        {
-            return y;
-        }
-
-
-        public double getVx()
-        {
-            return Vx;
-        }
-
-
-        public double getVy()
-        {
-            return Vy;
-        }
-
-
-        public int getId()
-        {
-            return id;
-        }
-
-        public bool getIsFriendly()
-        {
-            return isFriendly;
-        }
-        public EntityType.Entitytype GetEntityType()
-        {
-            return type;
-        }
-
 
         public virtual void UpdatePosition(double dt)
         {
             if (isDestroyed)
                 return;
 
+            double previousX = x;
+            double previousY = y;
+
             x += Vx * dt;
             y += Vy * dt;
-        }
 
+            if (!hasImpactPoint || isFriendly)
+                return;
+
+            // Check whether the movement segment reached
+            // the impact point, even between timer ticks.
+            double dx = x - previousX;
+            double dy = y - previousY;
+
+            double lengthSquared = dx * dx + dy * dy;
+
+            double t = 0;
+
+            if (lengthSquared > 0)
+            {
+                t = (
+                    (impactX - previousX) * dx +
+                    (impactY - previousY) * dy
+                ) / lengthSquared;
+
+                t = Math.Max(0, Math.Min(1, t));
+            }
+
+            double closestX = previousX + t * dx;
+            double closestY = previousY + t * dy;
+
+            double distanceX = impactX - closestX;
+            double distanceY = impactY - closestY;
+
+            double distanceSquared =
+                distanceX * distanceX +
+                distanceY * distanceY;
+
+            if (distanceSquared <= ImpactRadius * ImpactRadius)
+            {
+                isDestroyed = true;
+            }
+        }
 
         public bool HasImpacted()
         {
             return isDestroyed;
         }
 
-
-        public double getSpeed()
-        {
-            return Math.Sqrt(
-                Vx * Vx +
-                Vy * Vy
-            );
-        }
-
-
         public double TimeToImpact()
         {
-            double distance =
-                Math.Sqrt(
-                    x * x +
-                    y * y
-                );
-
-            if (getSpeed() == 0)
+            if (!hasImpactPoint)
                 return double.PositiveInfinity;
 
-            return distance / getSpeed();
-        }
+            double speed = getSpeed();
 
+            if (speed <= 0)
+                return double.PositiveInfinity;
+
+            double dx = impactX - x;
+            double dy = impactY - y;
+
+            // A target moving away from its impact point
+            // should not have a valid ETA.
+            if (dx * Vx + dy * Vy <= 0)
+                return double.PositiveInfinity;
+
+            return Math.Sqrt(dx * dx + dy * dy) / speed;
+        }
 
         public override string ToString()
         {
-            return
-                $"{name} at ({x}, {y}) speed {getSpeed()}";
+            return $"{name} at ({x:F0}, {y:F0}) speed {getSpeed():F0}";
         }
     }
 }
