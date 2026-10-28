@@ -77,8 +77,8 @@
                 entityType,
                 isFriendly)
         {
-            ImpactX = impactX;
-            ImpactY = impactY;
+            ImpactX = 0;
+            ImpactY = 0;
             HasImpactPoint = true;
         }
     }

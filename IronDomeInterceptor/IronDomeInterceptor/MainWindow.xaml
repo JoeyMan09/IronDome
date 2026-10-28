@@ -149,8 +149,17 @@
                     CornerRadius="5">
 
                 <Grid>
-                    <Canvas x:Name="InterceptorCanvas"
-                            Background="Transparent"/>
+                    <Grid>
+                        <Image x:Name="IsraelMap"
+        Source="C:\Users\idank\source\repos\IronDome\IronDomeSystem\IronDomeInterceptor\IronDomeInterceptor\map - Copy.png"
+        Stretch="Uniform"
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center"
+        Opacity="0.9"/>
+
+                        <Canvas x:Name="InterceptorCanvas"
+            Background="Transparent"/>
+                    </Grid>
 
                     <Border HorizontalAlignment="Left"
                             VerticalAlignment="Top"

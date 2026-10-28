@@ -96,21 +96,34 @@ namespace IronDomeInterceptor
                 List<Interceptor> completedInterceptors = new();
 
                 // Detect successful interceptions
+                // Detect successful and failed interceptions
                 foreach (Interceptor interceptor in interceptors)
                 {
-                    if (!interceptor.GetHasInterceptedTarget())
-                        continue;
+                    FlyingEntity? target = interceptor.GetTarget();
 
-                    FlyingEntity target = interceptor.GetTarget();
-
-                    if (target != null &&
-                        flyingEntities.Contains(target) &&
-                        !destroyedTargets.Contains(target))
+                    if (interceptor.GetHasInterceptedTarget())
                     {
-                        destroyedTargets.Add(target);
-                    }
+                        if (target != null &&
+                            flyingEntities.Contains(target) &&
+                            !destroyedTargets.Contains(target))
+                        {
+                            destroyedTargets.Add(target);
+                        }
 
-                    completedInterceptors.Add(interceptor);
+                        completedInterceptors.Add(interceptor);
+                    }
+                    else if (interceptor.GetHasFailedInterception())
+                    {
+                        if (interceptor.HasFinishedFalling())
+                        {
+                            completedInterceptors.Add(interceptor);
+                            txtState.Text = "INTERCEPTION FAILED";
+
+                            txtInterceptStatus.Text =
+                                $"FAILED: {interceptor.getName()}\n" +
+                                $"TARGET STILL ACTIVE: {target?.getName()}";
+                        }
+                    }
                 }
 
                 // Remove successful interceptions before
@@ -359,17 +372,15 @@ namespace IronDomeInterceptor
 
         private bool HasActiveInterceptor(FlyingEntity target)
         {
-            return interceptors.Any(
-                i => ReferenceEquals(i.GetTarget(), target)
-            );
+            return interceptors.Any(i =>
+                ReferenceEquals(i.GetTarget(), target) &&
+                !i.GetHasFailedInterception() &&
+                !i.GetHasInterceptedTarget());
         }
 
         private void LaunchInterceptor(FlyingEntity target)
         {
-            if (simulationEnded)
-                return;
-
-            if (target.getIsFriendly())
+            if (simulationEnded || target.getIsFriendly())
                 return;
 
             if (!flyingEntities.Contains(target))
@@ -378,21 +389,22 @@ namespace IronDomeInterceptor
             if (HasActiveInterceptor(target))
                 return;
 
+            IronDomeBattery battery = GetBatteryForTarget(target);
+
             interceptorNumber++;
 
             Interceptor interceptor = new Interceptor(
-                0,
-                0,
+                battery.X,
+                battery.Y,
                 $"Interceptor-{interceptorNumber}",
                 600,
                 0,
                 1,
-                1000,
+                100,
                 EntityType.Entitytype.interceptor
             );
 
             interceptor.EngageTarget(target);
-
             interceptors.Add(interceptor);
 
             UpdateInterceptorList();
@@ -401,7 +413,9 @@ namespace IronDomeInterceptor
             txtState.Text = "INTERCEPTING";
 
             txtCurrentCommand.Text =
-                $"INTERCEPTING: {target.getName()}";
+                $"BATTERY: {battery.City}\n" +
+                $"TARGET: {target.getName()}\n" +
+                "STATUS: INTERCEPTOR LAUNCHED";
 
             if (!simulationTimer.IsEnabled)
                 simulationTimer.Start();
@@ -513,19 +527,7 @@ namespace IronDomeInterceptor
         {
             InterceptorCanvas.Children.Clear();
 
-            Point batteryPoint = WorldToCanvas(0, 0);
-
-            Rectangle battery = new Rectangle
-            {
-                Width = 14,
-                Height = 14,
-                Fill = Brushes.Green
-            };
-
-            InterceptorCanvas.Children.Add(battery);
-
-            Canvas.SetLeft(battery, batteryPoint.X - 7);
-            Canvas.SetTop(battery, batteryPoint.Y - 7);
+            DrawAllBatteries();
 
             // Targets
             foreach (FlyingEntity target in flyingEntities)
@@ -590,7 +592,42 @@ namespace IronDomeInterceptor
                 }
             }
         }
+        private void DrawAllBatteries()
+        {
+            foreach (IronDomeBattery battery in batteries)
+            {
+                Point p = WorldToCanvas(battery.X, battery.Y);
 
+                Ellipse marker = new Ellipse
+                {
+                    Width = 14,
+                    Height = 14,
+                    Fill = Brushes.LimeGreen,
+                    Stroke = Brushes.White,
+                    StrokeThickness = 1.5
+                };
+
+                InterceptorCanvas.Children.Add(marker);
+
+                Canvas.SetLeft(marker, p.X - 7);
+                Canvas.SetTop(marker, p.Y - 7);
+
+                TextBlock label = new TextBlock
+                {
+                    Text = battery.City,
+                    Foreground = Brushes.LimeGreen,
+                    FontSize = 11,
+                    FontWeight = FontWeights.Bold,
+                    Background = new SolidColorBrush(
+                        Color.FromArgb(190, 5, 12, 18))
+                };
+
+                InterceptorCanvas.Children.Add(label);
+
+                Canvas.SetLeft(label, p.X + 11);
+                Canvas.SetTop(label, p.Y - 8);
+            }
+        }
         private Image CreateTargetIcon(FlyingEntity entity)
         {
             string imagePath;
@@ -860,6 +897,34 @@ namespace IronDomeInterceptor
             RoutedEventArgs e)
         {
             boom = !boom;
+        }
+        private readonly List<IronDomeBattery> batteries = new()
+{
+    new("Haifa", -1500, 7000),
+    new("Tel Aviv", -1200, 2500),
+    new("Jerusalem", 1200, 1500),
+    new("Ashdod", -1000, 500),
+    new("Ashkelon", -900, -1000),
+    new("Beer Sheva", 0, -4000),
+    new("Eilat", 500, -8500)
+}; private IronDomeBattery GetBatteryForTarget(FlyingEntity target)
+        {
+            if (targetCommands.TryGetValue(target, out InterceptCommand? command)
+                && command.HasImpactPoint)
+            {
+                return batteries
+                    .OrderBy(b =>
+                        Math.Pow(b.X - command.ImpactX, 2) +
+                        Math.Pow(b.Y - command.ImpactY, 2))
+                    .First();
+            }
+
+            // Fallback if impact point was not received
+            return batteries
+                .OrderBy(b =>
+                    Math.Pow(b.X - target.getX(), 2) +
+                    Math.Pow(b.Y - target.getY(), 2))
+                .First();
         }
     }
 }

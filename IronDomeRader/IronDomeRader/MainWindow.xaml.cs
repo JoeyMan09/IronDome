@@ -19,6 +19,9 @@ namespace IronDomeRader
 {
     public partial class MainWindow : Window
     {
+        private double nextSpawnTime;
+        private const double MinSpawnSeconds = 5.0;
+        private const double MaxSpawnSeconds = 15.0;
         private RadarSystem radarSystem;
         private DispatcherTimer timer;
         private Random rand;
@@ -47,6 +50,13 @@ namespace IronDomeRader
                     RemoveDestroyedTarget(targetId);
                 });
             };
+        }
+        private void ScheduleNextSpawn()
+        {
+            double delay = MinSpawnSeconds +
+                rand.NextDouble() * (MaxSpawnSeconds - MinSpawnSeconds);
+
+            nextSpawnTime = _clock.Elapsed.TotalSeconds + delay;
         }
         private void RemoveDestroyedTarget(int targetId)
         {
@@ -157,12 +167,17 @@ namespace IronDomeRader
         // ── Sweep animation ────────────────────────────────────────────────
         public void StartRadar()
         {
+            if (timer != null && timer.IsEnabled)
+                return;
+
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromMilliseconds(30);
             timer.Tick += OnTick;
 
-            _clock.Start();
+            _clock.Restart();
             _lastTime = 0;
+
+            ScheduleNextSpawn();
 
             timer.Start();
         }
@@ -182,13 +197,22 @@ namespace IronDomeRader
 
             radarSystem.MoveAll(dt);
 
-            if (radarSystem.GetFlyingEntities().Count < 5)
-                radarSystem.SpawnFlyingEntity(rand);
+            // Spawn a new target at a random interval
+            if (now >= nextSpawnTime)
+            {
+                if (radarSystem.GetFlyingEntities().Count <
+                    RadarSystem.MaxActiveTargets)
+                {
+                    radarSystem.SpawnFlyingEntity(rand);
+                }
 
-            //Title = $"Entities: {radarSystem.GetFlyingEntities().Count}";
+                // Schedule the next attempt even if the radar is full
+                ScheduleNextSpawn();
+            }
 
             DrawSweep();
             DrawRadar();
+
             tableUpdateCounter++;
 
             if (tableUpdateCounter >= 10)

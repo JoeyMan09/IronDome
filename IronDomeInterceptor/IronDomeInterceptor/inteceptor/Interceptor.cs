@@ -1,113 +1,198 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace IronDomeInterceptor.inteceptor
 {
     internal class Interceptor : FlyingEntity
     {
-        private double interceptionRange;
-        private FlyingEntity target;
-        private double speed;
-        private bool isEngaged;
-        private bool HasIntercepedTarget;
+        private const double SuccessProbability = 0.80;
 
-        public Interceptor(double x, double y, string name, double Vx, double Vy, double size, double interceptionRange,EntityType.Entitytype type)
-            : base(x, y, name, Vx, Vy, size,type, true)
+        private readonly double interceptionRange;
+        private readonly double speed;
+
+        private FlyingEntity? target;
+
+        private bool isEngaged;
+        private bool hasInterceptedTarget;
+        private bool hasFailedInterception;
+        private bool isFalling = false;
+        private const double Gravity = 300.0;
+        private const double GroundY = -25000.0;
+
+        public bool IsFalling()
+        {
+            return isFalling;
+        }
+
+        public bool HasFinishedFalling()
+        {
+            return isFalling && y <= GroundY;
+        }
+        public Interceptor(
+            double x,
+            double y,
+            string name,
+            double Vx,
+            double Vy,
+            double size,
+            double interceptionRange,
+            EntityType.Entitytype type)
+            : base(x, y, name, Vx, Vy, size, type, true)
         {
             this.interceptionRange = interceptionRange;
-            target = null;
             speed = Math.Sqrt(Vx * Vx + Vy * Vy);
-            isEngaged = false;
-            HasIntercepedTarget = false;
         }
+
         public double InterceptionRange()
         {
             return interceptionRange;
         }
+
         public void SetHasInterceptedTarget()
         {
-            HasIntercepedTarget = true;
+            hasInterceptedTarget = true;
+            hasFailedInterception = false;
+            isEngaged = false;
         }
+
         public bool GetHasInterceptedTarget()
         {
-            return HasIntercepedTarget;
+            return hasInterceptedTarget;
         }
-        public FlyingEntity GetTarget()
+
+        public bool GetHasFailedInterception()
+        {
+            return hasFailedInterception;
+        }
+
+        public FlyingEntity? GetTarget()
         {
             return target;
         }
-        public virtual void EngageTarget(FlyingEntity target)
+
+        public virtual void EngageTarget(FlyingEntity newTarget)
         {
-            if (target != null && !isEngaged)
-            {
-                this.target = target;
-                isEngaged = true;
-                Console.WriteLine($"{name} has engaged target {target.getName()}");
-            }
+            if (newTarget == null || isEngaged)
+                return;
+
+            target = newTarget;
+            isEngaged = true;
+
+            hasInterceptedTarget = false;
+            hasFailedInterception = false;
         }
+
         public virtual void DisEngageTarget()
         {
-            if (target != null)
-            {
-                target = null;
-                isEngaged = false;
-                Vx = 0;
-                Vy = 0;
+            target = null;
+            isEngaged = false;
 
-            }
+            Vx = 0;
+            Vy = 0;
         }
+
         public override void UpdatePosition(double time)
         {
-            if (isEngaged && target != null)
+            if (isFalling)
             {
-                double targetX = target.getX();
-                double targetY = target.getY();
-
-                double directionX = targetX - x;
-                double directionY = targetY - y;
-
-                double length = Math.Sqrt(directionX * directionX + directionY * directionY);
-
-                if (length > 0)
-                {
-                    directionX /= length;
-                    directionY /= length;
-
-                    Vx = directionX * speed;
-                    Vy = directionY * speed;
-                }
+                Vy -= Gravity * time;
 
                 x += Vx * time;
                 y += Vy * time;
 
-                if (length < 100)
-                {
-                    HasIntercepedTarget = true;
-                    isEngaged = false;
-                }
+                return;
             }
-        }
-        public double TimeToIntercept()
-        {
-            if (target != null)
+            if (!isEngaged || target == null || time <= 0)
+                return;
+
+            double dx = target.getX() - x;
+            double dy = target.getY() - y;
+
+            double distance = Math.Sqrt(dx * dx + dy * dy);
+
+            if (distance <= interceptionRange)
             {
-                double targetX = target.getX();
-                double targetY = target.getY();
-                double directionX = targetX - x;
-                double directionY = targetY - y;
-                double distance = Math.Sqrt(directionX * directionX + directionY * directionY);
-                if (speed > 0)
-                {
-                    double timeToIntercept = distance / speed;
-                    return timeToIntercept;
-                }
+                AttemptInterception();
+                return;
             }
-            return -1.0;
+
+            if (speed <= 0)
+                return;
+
+            double directionX = dx / distance;
+            double directionY = dy / distance;
+
+            Vx = directionX * speed;
+            Vy = directionY * speed;
+
+            double movement = speed * time;
+
+            if (movement >= distance)
+            {
+                x = target.getX();
+                y = target.getY();
+
+                AttemptInterception();
+                return;
+            }
+
+            x += directionX * movement;
+            y += directionY * movement;
+
+            double remainingX = target.getX() - x;
+            double remainingY = target.getY() - y;
+
+            double remainingDistance = Math.Sqrt(
+                remainingX * remainingX +
+                remainingY * remainingY
+            );
+
+            if (remainingDistance <= interceptionRange)
+            {
+                AttemptInterception();
+            }
         }
 
+        private void AttemptInterception()
+        {
+            if (!isEngaged)
+                return;
+
+            isEngaged = false;
+
+            bool success =
+                Random.Shared.NextDouble() < SuccessProbability;
+
+            if (success)
+            {
+                hasInterceptedTarget = true;
+
+                Vx = 0;
+                Vy = 0;
+            }
+            else
+            {
+                hasFailedInterception = true;
+                isFalling = true;
+
+                // Keep the current velocity so it
+                // continues forward before falling.
+            }
+        }
+
+        public double TimeToIntercept()
+        {
+            if (target == null || speed <= 0)
+                return -1;
+
+            double dx = target.getX() - x;
+            double dy = target.getY() - y;
+
+            double distance = Math.Sqrt(dx * dx + dy * dy);
+
+            return Math.Max(
+                0,
+                (distance - interceptionRange) / speed
+            );
+        }
     }
 }
